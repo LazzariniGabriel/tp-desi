@@ -7,13 +7,94 @@ INICIO : EJECUTAR LA PRE CARGA DE DATOS, ARCHIVO "precarga-receta.sql" .
 ------------------------------------------------------------------------------
 ESCENARIO 1 : CREACION
 
-POST: 
+POST: http://localhost:8080/recetas
+{
+    "nombre": "Curry de Garbanzos y Espinacas",
+    "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
+    "ingredientes": [
+        {
+            "ingrediente": {"id": 9},   // ID del ingrediente "Cebolla" de tu catálogo (data.sql)
+            "cantidad": 0.200,          // 200 gramos
+            "calorias": 80              // 80 calorías
+        },
+        {
+            "ingrediente": {"id": 10},  // ID del ingrediente "Ajo" de tu catálogo (data.sql)
+            "cantidad": 0.010,          // 10 gramos
+            "calorias": 15              // 15 calorías
+        },
+        {
+            "ingrediente": {"id": 8},   // ID del ingrediente "Tomate" de tu catálogo (data.sql)
+            "cantidad": 0.400,          // 400 gramos
+            "calorias": 90              // 90 calorías
+        },
+        {
+            "ingrediente": {"id": 1},   // ID del ingrediente "Harina 000" (usémoslo para espesar el curry, aunque no sea típico)
+            "cantidad": 0.030,          // 30 gramos
+            "calorias": 100             // 100 calorías
+        }
+        // Nota: Los ingredientes que no tienen un ID asignado (solo {"id": X} para el catálogo)
+        // son los "nuevos" ingredientes para esta receta en particular.
+        // El sistema les asignará un ID de IngredienteReceta automáticamente.
+    ]
+}
 
 
 
 
 RESPUESTA : 
-
+{
+    "id": 5,
+    "nombre": "Curry de Garbanzos y Espinacas",
+    "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
+    "activa": true,
+    "ingredientes": [
+        {
+            "id": 13,
+            "ingrediente": {
+                "id": 9,
+                "nombre": "Cebolla",
+                "activo": true
+            },
+            "cantidad": 0.2,
+            "calorias": 80,
+            "activo": true
+        },
+        {
+            "id": 14,
+            "ingrediente": {
+                "id": 10,
+                "nombre": "Ajo",
+                "activo": true
+            },
+            "cantidad": 0.01,
+            "calorias": 15,
+            "activo": true
+        },
+        {
+            "id": 15,
+            "ingrediente": {
+                "id": 8,
+                "nombre": "Tomate",
+                "activo": true
+            },
+            "cantidad": 0.4,
+            "calorias": 90,
+            "activo": true
+        },
+        {
+            "id": 16,
+            "ingrediente": {
+                "id": 1,
+                "nombre": "Harina 000",
+                "activo": true
+            },
+            "cantidad": 0.03,
+            "calorias": 100,
+            "activo": true
+        }
+    ],
+    "caloriasTotales": 285
+}
 
 
 ------------------------------------------------------------------------------
@@ -207,7 +288,7 @@ RESPUESTA:
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-PUT: 
+PUT: http://localhost:8080/recetas/1
 
 {
     "id": 1,
