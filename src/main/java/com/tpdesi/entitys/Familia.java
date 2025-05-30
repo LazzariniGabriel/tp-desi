@@ -1,64 +1,63 @@
 package com.tpdesi.entitys;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(of = "nroFamilia")
 public class Familia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre;
+    @Column(unique = true, nullable = false)
+    private String nroFamilia;
 
-    private LocalDate fechaAlta;
+    @NotNull(message = "El Nombre de Familia es requerido.")
+    @Size(min = 1, message = "El Nombre de Familia no puede estar vacío.")
+    private String nombreFamilia;
+
+    private LocalDate fechaAlta = LocalDate.now();
+
+    private LocalDate fechaUltimaAsistenciaRecibida;
 
     private boolean activa = true;
 
     @OneToMany(mappedBy = "familia", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Integrante> integrantes;
+    @JsonManagedReference
+    @Valid
+    private List<Integrante> integrantes = new ArrayList<>();
 
-    // --- GETTERS & SETTERS ---
-
-    public Long getId() {
-        return id;
+    public void addIntegrante(Integrante integrante) {
+        if (integrante != null) {
+            integrantes.add(integrante);
+            integrante.setFamilia(this);
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void removeIntegrante(Integrante integrante) {
+        if (integrante != null) {
+            integrantes.remove(integrante);
+            integrante.setFamilia(null);
+        }
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public LocalDate getFechaAlta() {
-        return fechaAlta;
-    }
-
-    public void setFechaAlta(LocalDate fechaAlta) {
-        this.fechaAlta = fechaAlta;
-    }
-
-    public boolean isActiva() {
-        return activa;
-    }
-
-    public void setActiva(boolean activa) {
-        this.activa = activa;
-    }
-
-    public List<Integrante> getIntegrantes() {
-        return integrantes;
-    }
-
-    public void setIntegrantes(List<Integrante> integrantes) {
-        this.integrantes = integrantes;
+    public long getCantidadIntegrantesActivos() {
+        return this.integrantes.stream()
+                .filter(Integrante::isActivo)
+                .count();
     }
 }
