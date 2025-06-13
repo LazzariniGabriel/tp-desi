@@ -7,6 +7,7 @@ INICIO - BASES DE DATOS CON TABLAS DE FAMILIA E INTEGRANTES VACIA.
 
 POST:
 
+
 {
     "nombreFamilia": "Familia Gutierrez y Abuela",
     "integrantes": [
