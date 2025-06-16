@@ -53,8 +53,16 @@ public class EntregaService {
             throw new IllegalArgumentException("No se pueden entregar más raciones que integrantes activos.");
         }
 
-        // FALTA EPIC 3: ABMC de preparaciones.
-        // Lógica pendiente: descontar las raciones del stock (preparación)
+            // FALTA EPIC 3: ABMC de preparaciones.
+            // Lógica pendiente: descontar las raciones del stock (preparación)
+            //
+            //if (preparacion.getStockRacionesRestantes() < raciones) {
+            //    throw new IllegalArgumentException("No hay suficientes raciones disponibles en la preparación.");
+            //}
+            //
+            // Descontar raciones de la preparación
+            //preparacion.setStockRacionesRestantes(preparacion.getStockRacionesRestantes() - raciones);
+            //preparacionRepository.save(preparacion);
 
         // Creamos el objeto Entrega con los datos recibidos y validados
         Entrega entrega = new Entrega();
@@ -81,8 +89,14 @@ public class EntregaService {
         // Marcamos la entrega como inactiva (eliminación lógica)
         entrega.setActivo(false);
 
-        // FALTA EPIC 3: ABMC de preparaciones
-        // Lógica pendiente: devolver al stock las raciones entregadas
+            // FALTA EPIC 3: ABMC de preparaciones
+            // Lógica pendiente: devolver al stock las raciones entregadas
+            // Devolver las raciones a la preparación
+            //Preparacion preparacion = entrega.getPreparacion();
+            //preparacion.setStockRacionesRestantes(
+            //        preparacion.getStockRacionesRestantes() + entrega.getCantidadRaciones()
+            //);
+            //preparacionRepository.save(preparacion);
 
         // Guardamos el cambio
         entregaRepository.save(entrega);
