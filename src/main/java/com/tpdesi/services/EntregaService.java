@@ -53,7 +53,7 @@ public class EntregaService {
             throw new IllegalArgumentException("No se pueden entregar más raciones que integrantes activos.");
         }
 
-        // FALTA EPIC 3: ABMC de preparaciones
+        // FALTA EPIC 3: ABMC de preparaciones.
         // Lógica pendiente: descontar las raciones del stock (preparación)
 
         // Creamos el objeto Entrega con los datos recibidos y validados
