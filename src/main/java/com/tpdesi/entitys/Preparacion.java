@@ -1,11 +1,9 @@
 package com.tpdesi.entitys;
 import com.tpdesi.ENUM.EstadoPreparacion;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,21 +16,31 @@ public class Preparacion {
 
     private LocalDate fechaPreparacion;
 
-    private List<Receta> seleccionDeRecetas;
+    @ManyToMany
+    @JoinTable(
+            name = "preparacion_receta",
+            joinColumns = @JoinColumn(name = "preparacion_id"),
+            inverseJoinColumns = @JoinColumn(name = "receta_id")
+    )
+    private List<Receta> seleccionDeRecetas = new ArrayList<>();
+
 
     private Integer cantidadDeRacionesPreparar;
 
     private EstadoPreparacion estadoPreparacion;
 
+    private Boolean recetaActiva;
+
     public Preparacion() {
     }
 
-    public Preparacion(String idPreparacion, LocalDate fechaPreparacion, List<Receta> seleccionDeRecetas, Integer cantidadDeRacionesPreparar, EstadoPreparacion estadoPreparacion) {
+    public Preparacion(String idPreparacion, LocalDate fechaPreparacion, List<Receta> seleccionDeRecetas, Integer cantidadDeRacionesPreparar, EstadoPreparacion estadoPreparacion, Boolean recetaActiva) {
         this.idPreparacion = idPreparacion;
         this.fechaPreparacion = fechaPreparacion;
         this.seleccionDeRecetas = seleccionDeRecetas;
         this.cantidadDeRacionesPreparar = cantidadDeRacionesPreparar;
         this.estadoPreparacion = estadoPreparacion;
+        this.recetaActiva = recetaActiva;
     }
 
     public String getIdPreparacion() {
@@ -73,5 +81,13 @@ public class Preparacion {
 
     public void setEstadoPreparacion(EstadoPreparacion estadoPreparacion) {
         this.estadoPreparacion = estadoPreparacion;
+    }
+
+    public Boolean getRecetaActiva() {
+        return recetaActiva;
+    }
+
+    public void setRecetaActiva(Boolean recetaActiva) {
+        this.recetaActiva = recetaActiva;
     }
 }
