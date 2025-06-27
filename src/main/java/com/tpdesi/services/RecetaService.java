@@ -152,4 +152,10 @@ public class RecetaService {
 
         return recetasActivas;
     }
+
+    public Receta buscarRecetaPorId(Long id) {
+        return recetaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Receta no encontrada con ID: " + id));
+    }
+
 }

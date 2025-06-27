@@ -12,7 +12,7 @@ public class Preparacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String idPreparacion;
+    private Long idPreparacion;
 
     private LocalDate fechaPreparacion;
 
@@ -34,7 +34,7 @@ public class Preparacion {
     public Preparacion() {
     }
 
-    public Preparacion(String idPreparacion, LocalDate fechaPreparacion, List<Receta> seleccionDeRecetas, Integer cantidadDeRacionesPreparar, EstadoPreparacion estadoPreparacion, Boolean recetaActiva) {
+    public Preparacion(Long idPreparacion, LocalDate fechaPreparacion, List<Receta> seleccionDeRecetas, Integer cantidadDeRacionesPreparar, EstadoPreparacion estadoPreparacion, Boolean recetaActiva) {
         this.idPreparacion = idPreparacion;
         this.fechaPreparacion = fechaPreparacion;
         this.seleccionDeRecetas = seleccionDeRecetas;
@@ -43,11 +43,11 @@ public class Preparacion {
         this.recetaActiva = recetaActiva;
     }
 
-    public String getIdPreparacion() {
+    public Long getIdPreparacion() {
         return idPreparacion;
     }
 
-    public void setIdPreparacion(String idPreparacion) {
+    public void setIdPreparacion(Long idPreparacion) {
         this.idPreparacion = idPreparacion;
     }
 
