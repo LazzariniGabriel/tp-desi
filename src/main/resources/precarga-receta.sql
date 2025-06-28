@@ -1,5 +1,5 @@
 -- Limpiar tablas si existen (opcional, para desarrollo).
--- ¡CUIDADO! Esto borrará todos tus datos. Úsalo solo si quieres empezar de cero.
+-- Úsalo solo si quieres empezar de cero.
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE entrega;
 TRUNCATE TABLE preparacion;
@@ -58,6 +58,3 @@ INSERT INTO familia (id, nro_familia, nombre_familia, fecha_alta, fecha_ultima_a
 INSERT INTO integrante (id, dni, apellido, nombre, fecha_nacimiento, ocupacion, activo, familia_id) VALUES
 (1, 12345678, 'Perez', 'Carlos', '1985-01-10', 'EMPLEADO', TRUE, 1),
 (2, 87654321, 'Perez', 'Ana', '1987-03-20', 'AMA_DE_CASA', TRUE, 1);
-
--- Nota: Los IDs autoincrementables se ajustarán solos si usas GenerationType.IDENTITY.
--- Puedes ajustar los IDs en los INSERT si usas otra estrategia o si necesitas IDs específicos para tus pruebas.

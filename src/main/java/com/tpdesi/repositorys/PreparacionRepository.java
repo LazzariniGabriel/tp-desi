@@ -13,7 +13,7 @@ import java.util.Optional; // Añadido para métodos que devuelven un solo resul
 @Repository
 public interface PreparacionRepository extends JpaRepository<Preparacion, Long> {
 
-    // CAMBIO: Ahora busca preparaciones activas (campo 'activa')
+    
     List<Preparacion> findByActivaTrue();
 
     // CAMBIO: Método para encontrar si ya existe una preparación de una receta en una fecha específica

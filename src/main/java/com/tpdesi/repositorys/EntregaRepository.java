@@ -22,5 +22,5 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
             LocalDate fecha, String nroFamilia, String nombreFamilia);
 
     // Método para buscar entregas activas (si tu lógica de listado solo quiere las activas)
-    List<Entrega> findByActivoTrue(); // Asegúrate de que este método sea usado si necesitas listar solo activas
+    List<Entrega> findByActivoTrue(); 
 }

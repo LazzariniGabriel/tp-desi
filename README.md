@@ -1,4 +1,4 @@
-# Proyecto DESI - Centro de Asistencia Social (UTN - FR Santa Fe)
+# Proyecto DESI - Centro de Asistencia Social (UTN Santa Fe)
 
 Este proyecto implementa un sistema de información para un centro de asistencia social, gestionando la entrega de alimentos a familias. El desarrollo se ha estructurado en 4 Épicas principales, abordando las necesidades de ABMC (Alta, Baja, Modificación y Consulta) de las entidades clave y la gestión de stock de alimentos.
 
@@ -8,7 +8,7 @@ Este proyecto implementa un sistema de información para un centro de asistencia
 
 A continuación, se detalla una descripción general de cada épica y cómo ha sido implementada:
 
-### **1. Épica 1: ABMC de Familias (Implementada por [Tu Nombre/Miembro A])**
+### **1. Épica 1: ABMC de Familias **
 
 Esta épica permite al personal del centro gestionar la información de las familias asistidas.
 
@@ -20,7 +20,7 @@ Esta épica permite al personal del centro gestionar la información de las fami
 
 ---
 
-### **2. Épica 2: ABMC de Recetas (Implementada por [Tu Nombre/Miembro A])**
+### **2. Épica 2: ABMC de Recetas **
 
 Gestiona la creación y el mantenimiento de las recetas que se pueden preparar en el centro.
 
@@ -32,7 +32,7 @@ Gestiona la creación y el mantenimiento de las recetas que se pueden preparar e
 
 ---
 
-### **3. Épica 3: ABMC de Preparaciones (Implementada por [Nombre del Compañero/Miembro B])**
+### **3. Épica 3: ABMC de Preparaciones **
 
 Esta épica registra la preparación de una receta específica en un día determinado, controlando el stock de ingredientes y raciones.
 
@@ -48,7 +48,7 @@ Esta épica registra la preparación de una receta específica en un día determ
 
 ---
 
-### **4. Épica 4: ABMC de Entrega de Alimentos (Implementada por [Nombre del Compañero/Miembro C])**
+### **4. Épica 4: ABMC de Entrega de Alimentos**
 
 Registra la entrega de raciones de alimentos a una familia específica, controlando el stock de raciones disponibles de las preparaciones.
 
@@ -160,6 +160,3 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
     1.  Deberías obtener un `201 Created` con los detalles de la entrega.
     2.  Realiza un `GET` a `http://localhost:8080/preparaciones/listar?fecha=<FECHA_ACTUAL>`. La preparación usada (`idPreparacion=1`) debería tener su `racionesDisponibles` disminuido (en este caso, de 1 a 0, si preparaste 1 y entregaste 1).
 
----
-
-Este `README.md` ofrece una buena introducción y un punto de partida para que cualquiera pueda entender el proyecto y verificar sus funcionalidades básicas.

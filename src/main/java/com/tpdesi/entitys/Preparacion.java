@@ -1,10 +1,9 @@
 package com.tpdesi.entitys;
 
-import com.tpdesi.enums.EstadoPreparacion; // Asegúrate que la importación apunte al paquete 'enums'
+import com.tpdesi.enums.EstadoPreparacion;
 import jakarta.persistence.*;
-import lombok.Data; // Añadido Lombok para consistencia
-import lombok.NoArgsConstructor; // Añadido Lombok para consistencia
-
+import lombok.Data; 
+import lombok.NoArgsConstructor; 
 import java.time.LocalDate;
 
 @Entity
@@ -33,16 +32,5 @@ public class Preparacion {
     // CAMBIO CRÍTICO: Renombrado de 'recetaActiva' a 'activa' para la eliminación lógica de la Preparacion
     private boolean activa; // Renombrado de 'recetaActiva'
 
-    // Constructor custom si lo necesitas, pero con @Data y @NoArgsConstructor es opcional
-    // public Preparacion(Long idPreparacion, LocalDate fechaPreparacion, Receta receta, Integer cantidadDeRacionesPreparar, EstadoPreparacion estadoPreparacion, boolean activa) {
-    //     this.idPreparacion = idPreparacion;
-    //     this.fechaPreparacion = fechaPreparacion;
-    //     this.receta = receta;
-    //     this.cantidadDeRacionesPreparar = cantidadDeRacionesPreparar;
-    //     this.estadoPreparacion = estadoPreparacion;
-    //     this.activa = activa;
-    //     this.racionesDisponibles = cantidadDeRacionesPreparar; // Inicializar racionesDisponibles
-    // }
-
-    // Si estás usando Lombok @Data, no necesitas los getters y setters explícitos
+    
 }
