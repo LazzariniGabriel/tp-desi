@@ -1,0 +1,30 @@
+
+______________________________________________________________________
+Nombres y Direcciones de Mail de cada integrante:
+----------------------------------------------------------------------
+
+* Gabriel Lazzarini - glazzarini@frsf.utn.edu.ar"
+
+* Federico Steinaker - steinaker@gmail.com"
+
+* Mauro Rosales - rosalesmauro369@gmail.com
+
+----------------------------------------------------------------------
+
+Detalle de Épicas implementadas por cada integrante:
+
+> Gabriel Lazzarini : Epic 1 y 2 [(ABMC Familias), (ABMC Recetas)].
+
+> Mauro Rosales : Epic 3 (ABMC Preparaciones).
+
+> Federico Steinaker : Epic 4 (ABMC Entrega de Alimentos).
+
+----------------------------------------------------------------------
+
+URL del Repositorio de GitHub:
+
+ --> https://github.com/LazzariniGabriel/tp-desi
+
+Rama a corregir:
+
+---> master
