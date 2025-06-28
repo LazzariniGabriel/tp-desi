@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         return generarRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    // NotFound personalizado (si usás tu propia clase)
+    
     @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
     public ResponseEntity<?> handleNotFound(ChangeSetPersister.NotFoundException ex) {
         return generarRespuesta(HttpStatus.NOT_FOUND, ex.getMessage());

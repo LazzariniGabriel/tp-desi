@@ -24,40 +24,40 @@ public class Familia {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String nroFamilia;
+    private String nroFamilia; 
 
     @NotNull(message = "El Nombre de Familia es requerido.")
     @Size(min = 1, message = "El Nombre de Familia no puede estar vacío.")
-    private String nombreFamilia;
+    private String nombre; 
 
-    private LocalDate fechaAlta = LocalDate.now();
+    private LocalDate fechaRegistro = LocalDate.now(); 
 
-    private LocalDate fechaUltimaAsistenciaRecibida;
+    private LocalDate fechaUltimaAsistenciaRecibida; 
 
-    private boolean activa = true;
+    private boolean activa = true; 
 
     @OneToMany(mappedBy = "familia", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Valid
-    private List<Integrante> integrantes = new ArrayList<>();
+    private List<Asistido> integrantes = new ArrayList<>(); 
 
-    public void addIntegrante(Integrante integrante) {
-        if (integrante != null) {
-            integrantes.add(integrante);
-            integrante.setFamilia(this);
+    public void addIntegrante(Asistido asistido) { 
+        if (asistido != null) {
+            integrantes.add(asistido);
+            asistido.setFamilia(this);
         }
     }
 
-    public void removeIntegrante(Integrante integrante) {
-        if (integrante != null) {
-            integrantes.remove(integrante);
-            integrante.setFamilia(null);
+    public void removeIntegrante(Asistido asistido) { 
+        if (asistido != null) {
+            integrantes.remove(asistido);
+            asistido.setFamilia(null);
         }
     }
 
     public long getCantidadIntegrantesActivos() {
         return this.integrantes.stream()
-                .filter(Integrante::isActivo)
+                .filter(Asistido::isActivo) 
                 .count();
     }
 }

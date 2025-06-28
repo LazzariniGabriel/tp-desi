@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.validator.constraints.Length; 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,36 +25,37 @@ public class Receta {
     @Column(unique = true)
     private String nombre;
 
-    @NotBlank(message = "La Descripción de la preparación es requerida.")
+    @NotBlank(message = "La Descripción es requerida.")
     @Column(columnDefinition = "TEXT")
-    private String descripcionPreparacion;
+    private String descripcion; 
 
     private boolean activa = true;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Valid
-    private List<IngredienteReceta> ingredientes = new ArrayList<>();
+    private List<ItemReceta> items = new ArrayList<>(); 
 
-    public void addIngrediente(IngredienteReceta ingredienteReceta) {
-        if (ingredienteReceta != null) {
-            ingredientes.add(ingredienteReceta);
-            ingredienteReceta.setReceta(this);
+    public void addItem(ItemReceta itemReceta) {
+        if (itemReceta != null) {
+            items.add(itemReceta);
+            itemReceta.setReceta(this);
         }
     }
 
-    public void removeIngrediente(IngredienteReceta ingredienteReceta) {
-        if (ingredienteReceta != null) {
-            ingredientes.remove(ingredienteReceta);
-            ingredienteReceta.setReceta(null);
+    public void removeItem(ItemReceta itemReceta) { 
+        if (itemReceta != null) {
+            items.remove(itemReceta);
+            itemReceta.setReceta(null);
         }
     }
 
     @Transient
     public int getCaloriasTotales() {
-        return this.ingredientes.stream()
-                .filter(IngredienteReceta::isActivo)
-                .mapToInt(IngredienteReceta::getCalorias)
+        
+        return this.items.stream()
+                .filter(ItemReceta::isActivo)
+                .mapToInt(item -> item.getIngrediente().getCalorias() * item.getCantidad().intValue()) 
                 .sum();
     }
 }

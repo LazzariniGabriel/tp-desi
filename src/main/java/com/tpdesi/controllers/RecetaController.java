@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,16 +21,10 @@ public class RecetaController {
     @Autowired
     private RecetaService recetaService;
 
-    // --- ALTA DE RECETA ---
     @PostMapping("/crear")
     public ResponseEntity<?> crearReceta(@Valid @RequestBody Receta receta, BindingResult result) {
         if (result.hasErrors()) {
-            Map<String, String> errors = result.getFieldErrors().stream()
-                    .collect(Collectors.toMap(
-                            fieldError -> fieldError.getField(),
-                            fieldError -> fieldError.getDefaultMessage()
-                    ));
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(getErrorsMap(result), HttpStatus.BAD_REQUEST);
         }
         try {
             Receta nuevaReceta = recetaService.altaReceta(receta);
@@ -42,16 +36,10 @@ public class RecetaController {
         }
     }
 
-    // --- MODIFICAR RECETA ---
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarReceta(@PathVariable Long id, @Valid @RequestBody Receta receta, BindingResult result) {
         if (result.hasErrors()) {
-            Map<String, String> errors = result.getFieldErrors().stream()
-                    .collect(Collectors.toMap(
-                            fieldError -> fieldError.getField(),
-                            fieldError -> fieldError.getDefaultMessage()
-                    ));
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(getErrorsMap(result), HttpStatus.BAD_REQUEST);
         }
         try {
             Receta recetaActualizada = recetaService.modificarReceta(id, receta);
@@ -63,7 +51,6 @@ public class RecetaController {
         }
     }
 
-    // --- DAR DE BAJA RECETA (LÓGICA) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarReceta(@PathVariable Long id) {
         try {
@@ -76,7 +63,6 @@ public class RecetaController {
         }
     }
 
-    // --- LISTAR RECETAS Y FILTRAR ---
     @GetMapping
     public ResponseEntity<List<Receta>> listarRecetasActivas(
             @RequestParam(required = false) String nombre,
@@ -86,10 +72,14 @@ public class RecetaController {
         return new ResponseEntity<>(recetas, HttpStatus.OK);
     }
 
-    // --- OBTENER RECETA POR ID (DETALLE) ---
     @GetMapping("/{id}")
     public ResponseEntity<Receta> obtenerRecetaPorId(@PathVariable Long id) {
         Receta receta = recetaService.obtenerRecetaPorId(id);
         return new ResponseEntity<>(receta, HttpStatus.OK);
+    }
+
+    private Map<String, String> getErrorsMap(BindingResult result) {
+        return result.getFieldErrors().stream()
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
     }
 }

@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "entrega_asistencia") 
 @Data
 @NoArgsConstructor
-public class Entrega {
+public class EntregaAsistencia { 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,16 +19,15 @@ public class Entrega {
     @JoinColumn(name = "familia_id", nullable = false)
     private Familia familia;
 
-    // CAMBIO CRÍTICO: Ahora la entrega se relaciona con una Preparacion, no directamente con una Receta
     @ManyToOne
-    @JoinColumn(name = "preparacion_id", nullable = false) // Columna para la clave foránea de Preparacion
-    private Preparacion preparacion; // Cambiado de 'receta' a 'preparacion'
+    @JoinColumn(name = "preparacion_id", nullable = false)
+    private Preparacion preparacion; 
 
     @Column(nullable = false)
     private int cantidadRaciones;
 
     @Column(nullable = false)
-    private LocalDate fechaEntrega = LocalDate.now();
+    private LocalDate fecha; 
 
-    private boolean activo = true; // Para eliminación lógica
+    private boolean activo = true; 
 }

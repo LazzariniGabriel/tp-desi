@@ -1,25 +1,28 @@
 package com.tpdesi.services.ingredienteService;
 
 import com.tpdesi.entitys.Ingrediente;
+import com.tpdesi.entitys.types.Condimento;
+import com.tpdesi.entitys.types.Producto;
 
 import java.util.List;
 
 public interface IngredienteServiceInterface {
 
-    Ingrediente crearIngrediente(Ingrediente ingrediente);
+    Producto crearProducto(Producto producto);
+    Condimento crearCondimento(Condimento condimento);
 
-    List<Ingrediente> listarIngredientes();
+    List<Ingrediente> listarTodosLosIngredientes();
+    List<Producto> listarProductos();
+    List<Condimento> listarCondimentos();
 
-    Ingrediente actualizarStock(Long id, Double nuevaCantidad);
+    Ingrediente obtenerIngredientePorId(Long id);
 
-    void eliminarIngrediente(Long id);
+    void eliminarIngredienteLogicamente(Long id);
 
-    Ingrediente agregarStock(Long idIngrediente, Double pesoEnKG);
+    Producto actualizarStockProducto(Long idProducto, Double nuevoStock);
+    Producto agregarStockProducto(Long idProducto, Double cantidadAAgregar);
+    Producto descontarStockProducto(Long idProducto, Double cantidadADescontar);
 
-    Ingrediente decrementarStock(Long idIngrediente, Double pesoStockADescontar);
-
-    boolean verificarDisponibilidadStock(Long idIngrediente, Double pesoAUsar);
-
-    Double obtenerStock(Long idIngrediente);
-
+    // Obtener el stock de un Producto por su ID
+    Double obtenerStockProducto(Long idProducto); 
 }

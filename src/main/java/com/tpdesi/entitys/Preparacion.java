@@ -2,35 +2,33 @@ package com.tpdesi.entitys;
 
 import com.tpdesi.enums.EstadoPreparacion;
 import jakarta.persistence.*;
-import lombok.Data; 
-import lombok.NoArgsConstructor; 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Entity
-@Data // Genera getters, setters, equals, hashCode y toString
-@NoArgsConstructor // Genera constructor sin argumentos
+@Data
+@NoArgsConstructor
 public class Preparacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPreparacion;
+    private Long id; 
 
-    private LocalDate fechaPreparacion;
+    private LocalDate fechaCoccion;
 
-    // CAMBIO CRÍTICO: Relación de ManyToMany a ManyToOne con Receta
     @ManyToOne
-    @JoinColumn(name = "receta_id", nullable = false) // Una Preparacion está ligada a UNA Receta
-    private Receta receta; // Cambiado de 'seleccionDeRecetas' (List) a una única 'receta'
+    @JoinColumn(name = "receta_id", nullable = false)
+    private Receta receta; 
 
-    private Integer cantidadDeRacionesPreparar;
+    private Integer totalRacionesPreparadas;
 
-    // NUEVO CAMPO CRÍTICO: Stock de raciones disponibles para esta preparación
-    private Integer racionesDisponibles; // Agregado para controlar el stock de raciones
+    private Integer stockRacionesRestantes; 
 
-    private EstadoPreparacion estadoPreparacion;
+    private EstadoPreparacion estadoPreparacion; 
 
-    // CAMBIO CRÍTICO: Renombrado de 'recetaActiva' a 'activa' para la eliminación lógica de la Preparacion
-    private boolean activa; // Renombrado de 'recetaActiva'
+    private boolean activa; 
 
-    
+   
 }

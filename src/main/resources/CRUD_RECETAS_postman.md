@@ -9,36 +9,38 @@
 * **URL:** `http://localhost:8080/recetas/crear`
 * **Método:** `POST`
 * **Headers:** `Content-Type: application/json`
-* **Body (raw - JSON):** (Asegúrate de que los IDs de ingredientes existan en tu precarga. Por ejemplo, `id: 9` para "Cebolla", etc.)
+* **Body (raw - JSON):**
+    * **¡Importante!** Las calorías ahora están en el `Ingrediente` (Producto/Condimento), no en `items`. Solo envías `ingrediente_id` y `cantidad` para el `item`.
+
     ```json
     {
         "nombre": "Curry de Garbanzos y Espinacas",
-        "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
-        "ingredientes": [
-            { "ingrediente": {"id": 9}, "cantidad": 0.200, "calorias": 80 },
-            { "ingrediente": {"id": 10}, "cantidad": 0.010, "calorias": 15 },
-            { "ingrediente": {"id": 8}, "cantidad": 0.400, "calorias": 90 },
-            { "ingrediente": {"id": 1}, "cantidad": 0.030, "calorias": 100 }
+        "descripcion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
+        "items": [ 
+            { "ingrediente": {"id": 9}, "cantidad": 0.200 }, 
+            { "ingrediente": {"id": 10}, "cantidad": 0.010 }, 
+            { "ingrediente": {"id": 8}, "cantidad": 0.400 }, 
+            { "ingrediente": {"id": 1}, "cantidad": 0.030 } 
         ]
     }
     ```
 * **Respuesta Esperada (201 Created):**
     ```json
     {
-        "id": 5, // ID autogenerado
+        "id": 5, 
         "nombre": "Curry de Garbanzos y Espinacas",
-        "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
+        "descripcion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
         "activa": true,
-        "ingredientes": [
-            { "id": 13, "ingrediente": { "id": 9, "nombre": "Cebolla", "activo": true }, "cantidad": 0.2, "calorias": 80, "activo": true },
-            { "id": 14, "ingrediente": { "id": 10, "nombre": "Ajo", "activo": true }, "cantidad": 0.01, "calorias": 15, "activo": true },
-            { "id": 15, "ingrediente": { "id": 8, "nombre": "Tomate", "activo": true }, "cantidad": 0.4, "calorias": 90, "activo": true },
-            { "id": 16, "ingrediente": { "id": 1, "nombre": "Harina 000", "activo": true }, "cantidad": 0.03, "calorias": 100, "activo": true }
+        "items": [ 
+            { "id": 13, "ingrediente": { "id": 9, "nombre": "Cebolla", "calorias": 40, "activo": true }, "cantidad": 0.2, "activo": true }, 
+            { "id": 14, "ingrediente": { "id": 10, "nombre": "Ajo", "calorias": 149, "activo": true }, "cantidad": 0.01, "activo": true },
+            { "id": 15, "ingrediente": { "id": 8, "nombre": "Tomate", "calorias": 18, "activo": true }, "cantidad": 0.4, "activo": true },
+            { "id": 16, "ingrediente": { "id": 1, "nombre": "Harina 000", "calorias": 364, "activo": true }, "cantidad": 0.03, "activo": true }
         ],
-        "caloriasTotales": 285 // Suma de calorías de los ingredientes
+        "caloriasTotales": 285 
     }
     ```
-    * **Anótate el `id` de esta receta y los `id` de sus `ingredientes` (IngredienteReceta).**
+    * **Anótate el `id` de esta receta y los `id` de sus `items` (ItemReceta).**
 
 ---
 
@@ -51,8 +53,8 @@
     ```json
     {
         "nombre": "Curry de Garbanzos y Espinacas",
-        "descripcionPreparacion": "Otro intento de crear el mismo curry.",
-        "ingredientes": []
+        "descripcion": "Otro intento de crear el mismo curry.",
+        "items": []
     }
     ```
 * **Respuesta Esperada (400 Bad Request):**
@@ -70,22 +72,21 @@
 * **Body (raw - JSON):**
     ```json
     {
-        "nombre": "", // Vacío
-        "descripcionPreparacion": null, // Nulo
-        "ingredientes": [
-            { "ingrediente": {"id": 999}, "cantidad": -5.0, "calorias": 0 }, // Ingrediente inexistente, cantidad negativa, calorías no positivas
-            { "ingrediente": null, "cantidad": 10.0, "calorias": 100 } // Ingrediente nulo
+        "nombre": "", 
+        "descripcion": null, 
+        "items": [
+            { "ingrediente": {"id": 999}, "cantidad": -5.0 }, 
+            { "ingrediente": null, "cantidad": 10.0 } 
         ]
     }
     ```
 * **Respuesta Esperada (400 Bad Request):**
     ```json
     {
-        "descripcionPreparacion": "La Descripción de la preparación es requerida.",
+        "descripcion": "La Descripción es requerida.",
         "nombre": "El Nombre de la receta es requerido."
     }
     ```
-    (Nota: Las validaciones de los ingredientes de receta se capturan en el servicio y pueden dar otro error si no se validan directamente con `@Valid` en el `ingredientes` de la receta)
 
 ---
 
@@ -99,26 +100,26 @@
         {
             "id": 1,
             "nombre": "Pan Casero Simple",
-            "descripcionPreparacion": "Mezclar ingredientes, amasar y hornear.",
+            "descripcion": "Mezclar ingredientes, amasar y hornear.",
             "activa": true,
-            "ingredientes": [ /* ... */ ],
-            "caloriasTotales": 1915
+            "items": [],
+            "caloriasTotales": 2045 
         },
         {
             "id": 2,
             "nombre": "Salsa Bolognesa",
-            "descripcionPreparacion": "Sofreír carne, cebolla y ajo, añadir tomate y cocinar a fuego lento.",
+            "descripcion": "Sofreír carne, cebolla y ajo, añadir tomate y cocinar a fuego lento.",
             "activa": true,
-            "ingredientes": [ /* ... */ ],
-            "caloriasTotales": 1040
+            "items": [],
+            "caloriasTotales": 3226 
         },
         {
             "id": 5,
             "nombre": "Curry de Garbanzos y Espinacas",
-            "descripcionPreparacion": "Un curry vegano y nutritivo...",
+            "descripcion": "Un curry vegano y nutritivo...",
             "activa": true,
-            "ingredientes": [ /* ... */ ],
-            "caloriasTotales": 285
+            "items": [],
+            "caloriasTotales": 285 
         }
     ]
     ```
@@ -126,47 +127,43 @@
 ---
 
 ### **5. Modificar Receta (PUT)**
-**Objetivo:** Actualizar descripción, cantidad y calorías de ingredientes, y eliminar lógicamente un ingrediente de receta existente.
+**Objetivo:** Actualizar descripción, cantidad de items, y eliminar lógicamente un item de receta existente.
 
 * **URL:** `http://localhost:8080/recetas/<ID_RECETA>` (reemplaza `<ID_RECETA>` con el ID de la receta que quieres modificar, ej. `1` para "Pan Casero Simple")
 * **Método:** `PUT`
 * **Headers:** `Content-Type: application/json`
 * **Body (raw - JSON):**
-    * **¡Importante!** Usa los IDs de los `ingredientes` (IngredienteReceta) que anotaste al crear la receta, o los que obtengas de un GET.
+    * **¡Importante!** Usa los IDs de los `items` (ItemReceta) que anotaste al crear la receta, o los que obtengas de un GET.
+    * Las calorías ya no se envían en el item, se calculan del Ingrediente.
 
     ```json
     {
-        "id": 1, // ID de la receta (se ignora el nombre)
-        "nombre": "Pan Casero Simple", // El nombre se envía, pero el backend lo ignora (es de solo lectura)
-        "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
+        "id": 1, 
+        "nombre": "Pan Casero Simple", 
+        "descripcion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
         "activa": true,
-        "ingredientes": [
+        "items": [ 
             {
-                "id": <ID_INGREDIENTE_RECETA_HARINA>, // ID de IngredienteReceta de Harina
+                "id": <ID_ITEM_RECETA_HARINA>, 
                 "ingrediente": {"id": 1},
-                "cantidad": 0.600, // Cantidad modificada
-                "calorias": 2160, // Calorías modificadas
+                "cantidad": 0.600, 
                 "activo": true
             },
             {
-                "id": <ID_INGREDIENTE_RECETA_SAL>, // ID de IngredienteReceta de Sal
+                "id": <ID_ITEM_RECETA_SAL>, 
                 "ingrediente": {"id": 6},
                 "cantidad": 0.015,
-                "calorias": 7,
                 "activo": true
             },
-            // Ingrediente "Levadura" (si existía) NO se incluye para eliminarlo lógicamente.
             {
-                "id": <ID_INGREDIENTE_RECETA_LECHE>, // ID de IngredienteReceta de Leche
+                "id": <ID_ITEM_RECETA_LECHE>, 
                 "ingrediente": {"id": 4},
                 "cantidad": 0.200,
-                "calorias": 100,
                 "activo": true
             },
             {
-                "ingrediente": {"id": 5}, // Nuevo Ingrediente "Manteca" (sin ID de IngredienteReceta)
-                "cantidad": 0.050,
-                "calorias": 350
+                "ingrediente": {"id": 5}, 
+                "cantidad": 0.050
             }
         ]
     }
@@ -176,20 +173,19 @@
     {
         "id": 1,
         "nombre": "Pan Casero Simple",
-        "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
+        "descripcion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
         "activa": true,
-        "ingredientes": [
-            // Ingredientes actualizados y nuevos
-            { /* ... Harina (cantidad y calorías actualizadas) ... */ },
-            { /* ... Sal (cantidad y calorías actualizadas) ... */ },
-            { /* ... Leche ... */ },
-            { /* ... Manteca (nuevo, con ID de IngredienteReceta autogenerado) ... */ },
-            { /* ... Levadura (si existía, ahora con activo: false) ... */ } // Fíjate en este
+        "items": [
+            { "id": <ID_ITEM_RECETA_HARINA>, "ingrediente": { "id": 1, "nombre": "Harina 000", "calorias": 364, "activo": true }, "cantidad": 0.6, "activo": true },
+            { "id": <ID_ITEM_RECETA_SAL>, "ingrediente": { "id": 6, "nombre": "Sal", "calorias": 0, "activo": true }, "cantidad": 0.015, "activo": true },
+            { "id": <ID_ITEM_RECETA_LECHE>, "ingrediente": { "id": 4, "nombre": "Leche", "calorias": 61, "activo": true }, "cantidad": 0.2, "activo": true },
+            { "id": <NUEVO_ID_ITEM_RECETA_MANTECA>, "ingrediente": { "id": 5, "nombre": "Manteca", "calorias": 717, "activo": true }, "cantidad": 0.05, "activo": true },
+            { "id": <ID_ITEM_RECETA_LEVADURA>, "ingrediente": { "id": 7, "nombre": "Levadura", "calorias": 89, "activo": true }, "cantidad": 0.005, "activo": false } 
         ],
-        "caloriasTotales": 2617 // Nueva suma de calorías de los ingredientes *activos*
+        "caloriasTotales": 2617 
     }
     ```
-    * **Verificación:** Consulta la receta por GET de nuevo y en tu base de datos para confirmar los estados `activo` de los ingredientes de receta.
+    * **Verificación:** Consulta la receta por GET de nuevo y en tu base de datos para confirmar los estados `activo` de los `items`.
 
 ---
 

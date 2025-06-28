@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface FamiliaRepository extends JpaRepository<Familia, Long> {
     List<Familia> findByActivaTrue();
     List<Familia> findByActivaTrueAndNroFamiliaContainingIgnoreCase(String nroFamilia);
-    List<Familia> findByActivaTrueAndNombreFamiliaContainingIgnoreCase(String nombreFamilia);
+    List<Familia> findByActivaTrueAndNombreContainingIgnoreCase(String nombre); 
     Optional<Familia> findByNroFamilia(String nroFamilia);
 }

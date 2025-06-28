@@ -1,138 +1,191 @@
 # CRUD INGREDIENTES (CATÁLOGO Y STOCK)
 
-**INICIO: Puedes ejecutar `precarga-receta.sql` para tener algunos ingredientes iniciales.**
+**INICIO: Puedes ejecutar `precarga-receta.sql` para tener algunos ingredientes iniciales con sus tipos (Producto/Condimento).**
 
 ---
 
-### **1. Crear un Ingrediente (POST)**
-**Objetivo:** Añadir un nuevo ingrediente al catálogo.
+### **1. Crear un Producto (POST)**
+**Objetivo:** Añadir un nuevo ingrediente de tipo Producto al catálogo, con stock y precio.
 
-* **URL:** `http://localhost:8080/ingredientes/agregar`
+* **URL:** `http://localhost:8080/ingredientes/producto`
 * **Método:** `POST`
 * **Headers:** `Content-Type: application/json`
 * **Body (raw - JSON):**
     ```json
     {
-        "nombre": "Aceite de Oliva",
-        "cantidadEnStock": 10.5
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "stockDisponible": 25.0,
+        "precioActual": 1.50
     }
     ```
 * **Respuesta Esperada (201 Created):**
     ```json
     {
-        "id": 12, // ID autogenerado
-        "nombre": "Aceite de Oliva",
-        "cantidadEnStock": 10.5,
-        "activo": true
+        "id": 12, 
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "activo": true,
+        "stockDisponible": 25.0,
+        "precioActual": 1.50
     }
     ```
-    * **Anótate el `id` de este ingrediente.**
+    * **Anótate el `id` de este producto.**
 
 ---
 
-### **2. Listar Ingredientes (GET)**
-**Objetivo:** Obtener todos los ingredientes en el catálogo.
+### **2. Crear un Condimento (POST)**
+**Objetivo:** Añadir un nuevo ingrediente de tipo Condimento al catálogo.
+
+* **URL:** `http://localhost:8080/ingredientes/condimento`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    ```json
+    {
+        "nombre": "Pimienta Negra",
+        "calorias": 5
+    }
+    ```
+* **Respuesta Esperada (201 Created):**
+    ```json
+    {
+        "id": 13, 
+        "nombre": "Pimienta Negra",
+        "calorias": 5,
+        "activo": true
+    }
+    ```
+    * **Anótate el `id` de este condimento.**
+
+---
+
+### **3. Listar Todos los Ingredientes (GET)**
+**Objetivo:** Obtener todos los ingredientes en el catálogo (Productos y Condimentos).
 
 * **URL:** `http://localhost:8080/ingredientes/listar`
 * **Método:** `GET`
-* **Respuesta Esperada (200 OK):** (Lista de todos los ingredientes activos y no activos si los hay)
+* **Respuesta Esperada (200 OK):** (Lista de todos los ingredientes con sus atributos específicos de tipo)
     ```json
     [
-        { "id": 1, "nombre": "Harina 000", "cantidadEnStock": 50.0, "activo": true },
-        // ... otros ingredientes precargados
-        { "id": 12, "nombre": "Aceite de Oliva", "cantidadEnStock": 10.5, "activo": true }
+        { "id": 1, "nombre": "Harina 000", "calorias": 364, "activo": true, "stockDisponible": 50.0, "precioActual": 1.20 },
+        { "id": 6, "nombre": "Sal", "calorias": 0, "activo": true }, 
+        { "id": 12, "nombre": "Arroz Blanco", "calorias": 130, "activo": true, "stockDisponible": 25.0, "precioActual": 1.50 },
+        { "id": 13, "nombre": "Pimienta Negra", "calorias": 5, "activo": true }
     ]
     ```
 
 ---
 
-### **3. Actualizar Stock de un Ingrediente (PUT)**
-**Objetivo:** Establecer una nueva cantidad de stock para un ingrediente.
+### **4. Obtener Ingrediente por ID (GET)**
+**Objetivo:** Obtener los detalles de un ingrediente específico por su ID.
 
-* **URL:** `http://localhost:8080/ingredientes/actualizarstock/<ID_INGREDIENTE>` (reemplaza `<ID_INGREDIENTE>`)
-* **Método:** `PUT`
-* **Headers:** `Content-Type: application/json`
-* **Body (raw - JSON):**
-    ```json
-    {
-        "cantidadEnStock": 15.0
-    }
-    ```
+* **URL:** `http://localhost:8080/ingredientes/<ID_INGREDIENTE>`
+* **Método:** `GET`
 * **Respuesta Esperada (200 OK):**
     ```json
     {
-        "id": <ID_INGREDIENTE>,
-        "nombre": "Aceite de Oliva",
-        "cantidadEnStock": 15.0, // Cantidad actualizada
-        "activo": true
+        "id": 12,
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "activo": true,
+        "stockDisponible": 25.0,
+        "precioActual": 1.50
     }
     ```
 
 ---
 
-### **4. Agregar Stock a un Ingrediente (PUT)**
-**Objetivo:** Incrementar la cantidad de stock de un ingrediente.
+### **5. Actualizar Stock de un Producto (PUT)**
+**Objetivo:** Establecer una nueva cantidad de stock para un **Producto**.
 
-* **URL:** `http://localhost:8080/ingredientes/<ID_INGREDIENTE>/agregar-stock` (reemplaza `<ID_INGREDIENTE>`)
+* **URL:** `http://localhost:8080/ingredientes/producto/<ID_PRODUCTO>/actualizar-stock` (reemplaza `<ID_PRODUCTO>`)
 * **Método:** `PUT`
 * **Headers:** `Content-Type: application/json`
 * **Body (raw - JSON):**
     ```json
     {
-        "pesoEnKG": 5.0
+        "stockDisponible": 30.0
     }
     ```
 * **Respuesta Esperada (200 OK):**
     ```json
     {
-        "id": <ID_INGREDIENTE>,
-        "nombre": "Aceite de Oliva",
-        "cantidadEnStock": 20.0, // Cantidad anterior + 5.0
-        "activo": true
+        "id": <ID_PRODUCTO>,
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "activo": true,
+        "stockDisponible": 30.0, 
+        "precioActual": 1.50
     }
     ```
 
 ---
 
-### **5. Descontar Stock de un Ingrediente (PUT)**
-**Objetivo:** Disminuir la cantidad de stock de un ingrediente.
+### **6. Agregar Stock a un Producto (PUT)**
+**Objetivo:** Incrementar la cantidad de stock de un **Producto**.
 
-* **URL:** `http://localhost:8080/ingredientes/<ID_INGREDIENTE>/descontar-stock` (reemplaza `<ID_INGREDIENTE>`)
+* **URL:** `http://localhost:8080/ingredientes/producto/<ID_PRODUCTO>/agregar-stock`
 * **Método:** `PUT`
 * **Headers:** `Content-Type: application/json`
 * **Body (raw - JSON):**
     ```json
     {
-        "pesoEnKG": 2.0
+        "cantidad": 5.0
     }
     ```
 * **Respuesta Esperada (200 OK):**
     ```json
     {
-        "id": <ID_INGREDIENTE>,
-        "nombre": "Aceite de Oliva",
-        "cantidadEnStock": 18.0, // Cantidad anterior - 2.0
-        "activo": true
+        "id": <ID_PRODUCTO>,
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "activo": true,
+        "stockDisponible": 35.0, 
+        "precioActual": 1.50
+    }
+    ```
+
+---
+
+### **7. Descontar Stock de un Producto (PUT)**
+**Objetivo:** Disminuir la cantidad de stock de un **Producto**.
+
+* **URL:** `http://localhost:8080/ingredientes/producto/<ID_PRODUCTO>/descontar-stock`
+* **Método:** `PUT`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    ```json
+    {
+        "cantidad": 2.0
+    }
+    ```
+* **Respuesta Esperada (200 OK):**
+    ```json
+    {
+        "id": <ID_PRODUCTO>,
+        "nombre": "Arroz Blanco",
+        "calorias": 130,
+        "activo": true,
+        "stockDisponible": 33.0, 
+        "precioActual": 1.50
     }
     ```
 * **Escenario con Error: Stock Insuficiente**
-    * **Body:** `{"pesoEnKG": 100.0}` (Cantidad mayor a la disponible)
+    * **Body:** `{"cantidad": 100.0}` (Cantidad mayor a la disponible)
     * **Respuesta Esperada (400 Bad Request):**
         ```
-        "Stock insuficiente para Aceite de Oliva. Stock actual: 18.0, requerido: 100.0"
+        "Stock insuficiente para Arroz Blanco. Stock actual: 33.0, requerido: 100.0"
         ```
 
 ---
 
-### **6. Eliminar un Ingrediente (DELETE - Lógica)**
-**Objetivo:** Marcar un ingrediente del catálogo como inactivo.
+### **8. Eliminar un Ingrediente (DELETE - Lógica)**
+**Objetivo:** Marcar cualquier ingrediente (Producto o Condimento) como inactivo.
 
 * **URL:** `http://localhost:8080/ingredientes/eliminar/<ID_INGREDIENTE_A_ELIMINAR>`
 * **Método:** `DELETE`
-* **Respuesta Esperada (200 OK):**
-    ```
-    "Ingrediente eliminado"
-    ```
+* **Respuesta Esperada (204 No Content):** `(No content)`
 * **Verificación:**
-    1.  Realiza un `GET` a `http://localhost:8080/ingredientes/listar`. El ingrediente eliminado lógicamente **aún aparecerá** en el listado por defecto (porque `findAll()` trae todos), pero su campo `activo` será `false`. Si tu lógica de listado solo muestra activos, entonces no aparecerá.
+    1.  Realiza un `GET` a `http://localhost:8080/ingredientes/listar`. El ingrediente eliminado lógicamente **aún aparecerá** en el listado por defecto (porque `findAll()` trae todos), pero su campo `activo` será `false`.
     2.  Confirma en tu base de datos que el campo `activo` de la tabla `ingrediente` para el `ID_INGREDIENTE_A_ELIMINAR` cambió a `false`.

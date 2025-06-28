@@ -2,16 +2,19 @@ package com.tpdesi.entitys;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero; 
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED) 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(of = "nombre") // Unicidad por nombre
-public class Ingrediente {
+@EqualsAndHashCode(of = "nombre") 
+public abstract class Ingrediente { 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +23,10 @@ public class Ingrediente {
     @NotBlank(message = "El nombre del ingrediente es requerido.")
     @Size(max = 100, message = "El nombre del ingrediente no puede exceder los 100 caracteres.")
     @Column(unique = true)
-    private String nombre; // Ej: "Harina", "Azúcar", "Leche"
+    private String nombre;
 
-    private Double cantidadEnStock;
-
-    // Un ingrediente del catálogo siempre está activo por defecto, no se pide eliminación lógica aquí
-    private boolean activo = true; // Por si en el futuro se quiere una eliminación lógica de ingredientes del catálogo
-
-    public Ingrediente(String nombre) {
-        this.nombre = nombre;
-    }
+    @NotNull(message = "Las calorías son requeridas.")
+    @PositiveOrZero(message = "Las calorías deben ser un número positivo o cero.") 
+    private Integer calorias; 
+    private boolean activo = true; 
 }

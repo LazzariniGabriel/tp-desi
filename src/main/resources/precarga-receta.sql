@@ -1,60 +1,108 @@
 -- Limpiar tablas si existen (opcional, para desarrollo).
--- Úsalo solo si quieres empezar de cero.
+-- Esto borrará todos tus datos. Úsalo solo si quieres empezar de cero.
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE entrega;
+TRUNCATE TABLE entrega_asistencia; 
 TRUNCATE TABLE preparacion;
-TRUNCATE TABLE ingrediente_receta;
+TRUNCATE TABLE item_receta; 
 TRUNCATE TABLE receta;
-TRUNCATE TABLE integrante;
+TRUNCATE TABLE asistido; 
 TRUNCATE TABLE familia;
-TRUNCATE TABLE ingrediente;
+TRUNCATE TABLE producto; 
+TRUNCATE TABLE condimento; 
+TRUNCATE TABLE ingrediente; 
+TRUNCATE TABLE persona; 
+TRUNCATE TABLE voluntario; 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Cargar Ingredientes base (catálogo)
-INSERT INTO ingrediente (id, nombre, activo, cantidad_en_stock) VALUES
-(1, 'Harina 000', TRUE, 50.0), -- Con stock inicial
-(2, 'Azúcar', TRUE, 20.0),
-(3, 'Huevos', TRUE, 10.0),
-(4, 'Leche', TRUE, 15.0),
-(5, 'Manteca', TRUE, 5.0),
-(6, 'Sal', TRUE, 2.0),
-(7, 'Levadura', TRUE, 1.0),
-(8, 'Tomate', TRUE, 30.0),
-(9, 'Cebolla', TRUE, 25.0),
-(10, 'Ajo', TRUE, 10.0),
-(11, 'Carne Picada', TRUE, 40.0);
+-- Cargar Ingredientes base (Ahora en la tabla 'ingrediente', y 'producto'/'condimento' para stock/precio)
+-- 'Harina 000' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (1, 'Harina 000', TRUE, 364);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (1, 50.0, 1.20); 
+
+-- 'Azúcar' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (2, 'Azúcar', TRUE, 387);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (2, 20.0, 0.90);
+
+-- 'Huevos' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (3, 'Huevos', TRUE, 155);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (3, 10.0, 0.25);
+
+-- 'Leche' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (4, 'Leche', TRUE, 61);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (4, 15.0, 1.10);
+
+-- 'Manteca' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (5, 'Manteca', TRUE, 717);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (5, 5.0, 2.50);
+
+-- 'Sal' es un Condimento (sin stock)
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (6, 'Sal', TRUE, 0);
+INSERT INTO condimento (id) VALUES (6);
+
+-- 'Levadura' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (7, 'Levadura', TRUE, 89);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (7, 1.0, 0.50);
+
+-- 'Tomate' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (8, 'Tomate', TRUE, 18);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (8, 30.0, 0.80);
+
+-- 'Cebolla' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (9, 'Cebolla', TRUE, 40);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (9, 25.0, 0.70);
+
+-- 'Ajo' es un Condimento (sin stock)
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (10, 'Ajo', TRUE, 149);
+INSERT INTO condimento (id) VALUES (10);
+
+-- 'Carne Picada' es un Producto
+INSERT INTO ingrediente (id, nombre, activo, calorias) VALUES (11, 'Carne Picada', TRUE, 250);
+INSERT INTO producto (id, stock_disponible, precio_actual) VALUES (11, 40.0, 5.00);
+
 
 -- Cargar Recetas de ejemplo
-INSERT INTO receta (id, nombre, descripcion_preparacion, activa) VALUES
+INSERT INTO receta (id, nombre, descripcion, activa) VALUES 
 (1, 'Pan Casero Simple', 'Mezclar ingredientes, amasar y hornear.', TRUE),
 (2, 'Salsa Bolognesa', 'Sofreír carne, cebolla y ajo, añadir tomate y cocinar a fuego lento.', TRUE),
-(3, 'Tarta de Manzana (Baja)', 'Receta de tarta clásica, desactivada para pruebas.', FALSE); -- Receta de baja lógica
+(3, 'Tarta de Manzana (Baja)', 'Receta de tarta clásica, desactivada para pruebas.', FALSE);
 
--- Cargar Ingredientes de Recetas (IngredienteReceta) para 'Pan Casero Simple' (id=1)
-INSERT INTO ingrediente_receta (receta_id, ingrediente_id, cantidad, calorias, activo) VALUES
-(1, 1, 0.500, 1800, TRUE),   -- Harina 000 (0.5 kg, 1800 cal)
-(1, 6, 0.010, 5, TRUE),     -- Sal (0.010 kg, 5 cal)
-(1, 7, 0.005, 10, TRUE),    -- Levadura (0.005 kg, 10 cal)
-(1, 4, 0.200, 100, TRUE);   -- Leche (0.2 kg, 100 cal)
+-- Cargar Items de Recetas (ItemReceta) para 'Pan Casero Simple' (id=1)
+INSERT INTO item_receta (receta_id, ingrediente_id, cantidad, activo) VALUES 
+(1, 1, 0.500, TRUE), 
+(1, 6, 0.010, TRUE), 
+(1, 7, 0.005, TRUE), 
+(1, 4, 0.200, TRUE);
 
--- Cargar Ingredientes de Recetas (IngredienteReceta) para 'Salsa Bolognesa' (id=2)
-INSERT INTO ingrediente_receta (receta_id, ingrediente_id, cantidad, calorias, activo) VALUES
-(2, 11, 0.300, 750, TRUE),   -- Carne Picada (0.3 kg, 750 cal)
-(2, 9, 0.150, 60, TRUE),    -- Cebolla (0.15 kg, 60 cal)
-(2, 10, 0.020, 30, TRUE),   -- Ajo (0.02 kg, 30 cal)
-(2, 8, 0.800, 200, TRUE);   -- Tomate (0.8 kg, 200 cal)
+-- Cargar Items de Recetas (ItemReceta) para 'Salsa Bolognesa' (id=2)
+INSERT INTO item_receta (receta_id, ingrediente_id, cantidad, activo) VALUES
+(2, 11, 0.300, TRUE),
+(2, 9, 0.150, TRUE), 
+(2, 10, 0.020, TRUE),
+(2, 8, 0.800, TRUE); 
 
--- Cargar Ingredientes de Recetas (IngredienteReceta) para 'Tarta de Manzana (Baja)' (id=3)
-INSERT INTO ingrediente_receta (receta_id, ingrediente_id, cantidad, calorias, activo) VALUES
-(3, 1, 0.300, 1080, TRUE), -- Harina 000
-(3, 2, 0.200, 800, TRUE),  -- Azúcar
-(3, 5, 0.100, 700, FALSE); -- Manteca (marcada como inactiva para pruebas de eliminación lógica)
+-- Cargar Items de Recetas (ItemReceta) para 'Tarta de Manzana (Baja)' (id=3)
+INSERT INTO item_receta (receta_id, ingrediente_id, cantidad, activo) VALUES
+(3, 1, 0.300, TRUE), 
+(3, 2, 0.200, TRUE),
+(3, 5, 0.100, FALSE); 
 
 
--- NUEVA SECCIÓN: Cargar una Familia inicial para pruebas (necesaria para Épica 4)
-INSERT INTO familia (id, nro_familia, nombre_familia, fecha_alta, fecha_ultima_asistencia_recibida, activa) VALUES
+-- Cargar una Familia inicial para pruebas (necesaria para Épica 4)
+INSERT INTO persona (id, dni, domicilio, apellido, nombre, fecha_nacimiento) VALUES
+(1, 12345678, 'Calle Falsa 123', 'Perez', 'Carlos', '1985-01-10'),
+(2, 87654321, 'Avenida Siempreviva 742', 'Perez', 'Ana', '1987-03-20');
+
+INSERT INTO asistido (id, ocupacion, fecha_registro, activo, familia_id) VALUES
+(1, 'EMPLEADO', CURDATE(), TRUE, NULL), 
+(2, 'AMA_DE_CASA', CURDATE(), TRUE, NULL);
+
+INSERT INTO familia (id, nro_familia, nombre, fecha_registro, fecha_ultima_asistencia_recibida, activa) VALUES
 (1, 'FAM-INICIAL1', 'Familia Prueba Asistencia', CURDATE(), NULL, TRUE);
 
-INSERT INTO integrante (id, dni, apellido, nombre, fecha_nacimiento, ocupacion, activo, familia_id) VALUES
-(1, 12345678, 'Perez', 'Carlos', '1985-01-10', 'EMPLEADO', TRUE, 1),
-(2, 87654321, 'Perez', 'Ana', '1987-03-20', 'AMA_DE_CASA', TRUE, 1);
+-- Asociar asistidos a la familia
+UPDATE asistido SET familia_id = 1 WHERE id IN (1, 2);
+
+-- Cargar un Voluntario inicial (solo para demostrar la tabla)
+INSERT INTO persona (id, dni, domicilio, apellido, nombre, fecha_nacimiento) VALUES
+(3, 11223344, 'Calle Voluntario 50', 'Garcia', 'Laura', '1975-04-01');
+INSERT INTO voluntario (id, nro_segu) VALUES (3, 'VOL-9876');

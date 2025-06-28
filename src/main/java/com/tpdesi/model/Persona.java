@@ -1,6 +1,6 @@
-package com.tpdesi.entitys;
+package com.tpdesi.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -13,10 +13,11 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED) // Estrategia de herencia
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(of = "dni")
-public class Integrante {
+@EqualsAndHashCode(of = "dni") // DNI es único entre todas las Personas
+public abstract class Persona { 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +27,10 @@ public class Integrante {
     @Positive(message = "El DNI debe ser un valor numérico positivo.")
     @Column(unique = true)
     private Long dni;
+
+    @NotNull(message = "El domicilio es requerido.")
+    @Size(min = 1, message = "El domicilio no puede estar vacío.")
+    private String domicilio;
 
     @NotNull(message = "El Apellido es requerido.")
     @Size(min = 1, message = "El Apellido no puede estar vacío.")
@@ -39,14 +44,5 @@ public class Integrante {
     @PastOrPresent(message = "La Fecha de nacimiento no puede ser futura.")
     private LocalDate fechaNacimiento;
 
-    @NotNull(message = "La Ocupación es requerida.")
-    @Enumerated(EnumType.STRING)
-    private Ocupacion ocupacion;
-
-    private boolean activo = true;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "familia_id")
-    @JsonBackReference
-    private Familia familia;
+    
 }

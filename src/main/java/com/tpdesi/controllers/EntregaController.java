@@ -1,7 +1,7 @@
 package com.tpdesi.controllers;
 
-import com.tpdesi.entitys.Entrega;
-import com.tpdesi.services.EntregaService;
+import com.tpdesi.entitys.EntregaAsistencia;
+import com.tpdesi.services.EntregaService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/entregas")
+@RequestMapping("/entregas") 
 public class EntregaController {
 
     @Autowired
@@ -19,13 +19,15 @@ public class EntregaController {
 
     @PostMapping
     public ResponseEntity<?> registrarEntrega(@RequestParam Long familiaId,
-                                              @RequestParam Long preparacionId, // CAMBIO: de recetaId a preparacionId
-                                              @RequestParam int raciones) {
+                                              @RequestParam Long preparacionId, 
+                                              @RequestParam int cantidadRaciones) { 
         try {
-            Entrega entrega = entregaService.registrarEntrega(familiaId, preparacionId, raciones); // CAMBIO aquí también
+            EntregaAsistencia entrega = entregaService.registrarEntrega(familiaId, preparacionId, cantidadRaciones);
             return new ResponseEntity<>(entrega, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -33,18 +35,18 @@ public class EntregaController {
     public ResponseEntity<?> eliminarEntrega(@PathVariable Long id) {
         try {
             entregaService.eliminarEntrega(id);
-            return new ResponseEntity<>("Entrega eliminada correctamente", HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) { // Cambiado a RuntimeException para manejar las excepciones del servicio
-            return new ResponseEntity<>("Error al eliminar entrega: " + e.getMessage(), HttpStatus.NOT_FOUND); // 404 si no existe, o 400 si hay otra lógica de negocio que falle
+            return new ResponseEntity<>("Entrega de asistencia eliminada correctamente", HttpStatus.NO_CONTENT); // Mensaje actualizado
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Error al eliminar entrega de asistencia: " + e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<Entrega>> listarPorFecha(@RequestParam(required = false) String fecha,
-                                                        @RequestParam(required = false) String nroFamilia,
-                                                        @RequestParam(required = false) String nombreFamilia) {
+    public ResponseEntity<List<EntregaAsistencia>> listarPorFecha(@RequestParam(required = false) String fecha,
+                                                                  @RequestParam(required = false) String nroFamilia,
+                                                                  @RequestParam(required = false) String nombreFamilia) {
         LocalDate fechaParseada = (fecha != null) ? LocalDate.parse(fecha) : LocalDate.now();
-        List<Entrega> entregas = entregaService.buscarPorFiltros(fechaParseada, nroFamilia, nombreFamilia);
+        List<EntregaAsistencia> entregas = entregaService.buscarPorFiltros(fechaParseada, nroFamilia, nombreFamilia);
         return new ResponseEntity<>(entregas, HttpStatus.OK);
     }
 }

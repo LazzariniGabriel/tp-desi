@@ -1,4 +1,4 @@
-# Proyecto DESI - Centro de Asistencia Social (UTN Santa Fe)
+# Proyecto DESI - Centro de Asistencia Social (UTN - FR Santa Fe)
 
 Este proyecto implementa un sistema de información para un centro de asistencia social, gestionando la entrega de alimentos a familias. El desarrollo se ha estructurado en 4 Épicas principales, abordando las necesidades de ABMC (Alta, Baja, Modificación y Consulta) de las entidades clave y la gestión de stock de alimentos.
 
@@ -6,59 +6,63 @@ Este proyecto implementa un sistema de información para un centro de asistencia
 
 ## **Visión General de las Épicas Resueltas**
 
-A continuación, se detalla una descripción general de cada épica y cómo ha sido implementada:
+A continuación, se detalla una descripción general de cada épica y cómo ha sido implementada, reflejando el diseño del diagrama de clases UML proporcionado:
 
-### **1. Épica 1: ABMC de Familias **
+### **1. Épica 1: ABMC de Familias**
 
 Esta épica permite al personal del centro gestionar la información de las familias asistidas.
 
+* **Entidades Centrales:** `Familia`, `Asistido` (hereda de `Persona`).
 * **Funcionalidades Clave:**
-    * **Alta:** Registro de nuevas familias con sus integrantes (DNI, apellido, nombre, fecha de nacimiento, ocupación). Validación de DNI único por integrante y campos requeridos. Generación automática de un "Número de Familia Asistida".
-    * **Baja (Lógica):** Las familias no se eliminan físicamente, se marcan como inactivas (`activa=false`). No aparecen en listados ni pueden recibir asistencia, pero su historial se mantiene.
-    * **Modificación:** Permite actualizar datos de la familia y de sus integrantes. La eliminación de integrantes es lógica (`activo=false`) si no son incluidos en la lista de actualización. El número de familia es de solo lectura.
-    * **Consulta/Listado:** Listado de familias activas con filtros por número de familia y nombre.
+    * **Alta:** Registro de nuevas `Familia`s con sus `Asistido`s (que son un tipo de `Persona` con DNI, domicilio, apellido, nombre, fecha de nacimiento, y ocupación). Validación de DNI único (a nivel de `Persona`) y campos requeridos. Generación automática de un "Número de Familia Asistida". La `fechaRegistro` del `Asistido` se guarda al crearlo.
+    * **Baja (Lógica):** Las `Familia`s no se eliminan físicamente, se marcan como inactivas (`activa=false`). No aparecen en listados ni pueden recibir asistencia, pero su historial se mantiene.
+    * **Modificación:** Permite actualizar `nombre` de la `Familia` y `fechaUltimaAsistenciaRecibida`, así como modificar y agregar `Asistido`s existentes o nuevos. La eliminación de `Asistido`s de la `Familia` es lógica (`activo=false`) si no son incluidos en la lista de actualización. El `nroFamilia` es de solo lectura.
+    * **Consulta/Listado:** Listado de `Familia`s activas con filtros por `nroFamilia` y `nombre`.
 
 ---
 
-### **2. Épica 2: ABMC de Recetas **
+### **2. Épica 2: ABMC de Recetas**
 
-Gestiona la creación y el mantenimiento de las recetas que se pueden preparar en el centro.
+Gestiona la creación y el mantenimiento de las `Receta`s que se pueden preparar en el centro.
 
+* **Entidades Centrales:** `Receta`, `ItemReceta`, `Ingrediente` (abstracta), `Producto` (hereda de `Ingrediente`), `Condimento` (hereda de `Ingrediente`).
 * **Funcionalidades Clave:**
-    * **Alta:** Registro de recetas con nombre, descripción y una lista de ingredientes (con cantidad y calorías). Validación de nombre de receta único y campos requeridos. Los ingredientes se asocian a un catálogo de ingredientes existente.
-    * **Baja (Lógica):** Las recetas se marcan como inactivas (`activa=false`). No se pueden seleccionar para preparaciones, pero su historial de uso se conserva.
-    * **Modificación:** Permite actualizar la descripción y los ingredientes. El nombre de la receta es de solo lectura. La eliminación de ingredientes dentro de una receta también es lógica (`activo=false`).
-    * **Consulta/Listado:** Listado de recetas activas, mostrando el nombre y las calorías totales. Permite filtrar por nombre y por rango de calorías.
+    * **Alta:** Registro de `Receta`s con `nombre`, `descripcion` y una lista de `ItemReceta`s. Cada `ItemReceta` especifica una `cantidad` y se asocia a un `Ingrediente` existente (que puede ser un `Producto` o un `Condimento`). La `calorias` de cada `Ingrediente` se define en la clase `Ingrediente` misma. Validación de `nombre` de `Receta` único y campos requeridos.
+    * **Baja (Lógica):** Las `Receta`s se marcan como inactivas (`activa=false`). No se pueden seleccionar para `Preparacion`es, pero su historial de uso se conserva.
+    * **Modificación:** Permite actualizar la `descripcion` de la `Receta` y sus `ItemReceta`s. El `nombre` de la `Receta` es de solo lectura. La eliminación de `ItemReceta`s dentro de una `Receta` también es lógica (`activo=false`).
+    * **Consulta/Listado:** Listado de `Receta`s activas, mostrando el `nombre` y las `caloriasTotales` (calculadas dinámicamente sumando `cantidad * calorias` de cada `ItemReceta` a través de su `Ingrediente` asociado). Permite filtrar por `nombre` y por rango de `caloriasTotales`.
 
 ---
 
-### **3. Épica 3: ABMC de Preparaciones **
+### **3. Épica 3: ABMC de Preparaciones**
 
-Esta épica registra la preparación de una receta específica en un día determinado, controlando el stock de ingredientes y raciones.
+Esta épica registra la `Preparacion` de una `Receta` específica en un día determinado, controlando el stock de `Ingrediente`s (tipo `Producto`) y `totalRacionesPreparadas`.
 
+* **Entidades Centrales:** `Preparacion` (asociada a una `Receta`).
 * **Funcionalidades Clave:**
-    * **Registro:** Creación de una preparación indicando fecha, receta y cantidad de raciones.
-        * **Validaciones Críticas:** La fecha no puede ser futura. No puede haber dos preparaciones de la misma receta en el mismo día. **Verifica stock de ingredientes antes de la preparación.**
-        * **Control de Stock:** Automáticamente **descuenta los ingredientes** del catálogo al registrar una preparación.
-        * **Stock de Raciones:** La preparación ahora tiene un campo `racionesDisponibles` que se inicializa con la cantidad de raciones preparadas.
-    * **Baja (Lógica):** La preparación se marca como inactiva (`activa=false`).
-        * **Control de Stock (CRÍTICO):** Al dar de baja una preparación, el sistema **reintegra el stock de ingredientes** consumidos a la fecha de creación.
-    * **Modificación:** Solo se permite modificar la fecha de la preparación (la receta y cantidad de raciones son fijas porque ya afectaron el stock).
-    * **Consulta/Listado:** Listado de preparaciones activas, mostrando fecha, nombre de receta, número de raciones preparadas y calorías por plato. Filtros por fecha y nombre de receta.
+    * **Registro:** Creación de una `Preparacion` indicando `fechaCoccion`, `Receta` asociada y `totalRacionesPreparadas`.
+        * **Validaciones Críticas:** La `fechaCoccion` no puede ser futura. No puede haber dos `Preparacion`es de la misma `Receta` en el mismo día. **Verifica el `stockDisponible` de los `Producto`s** (ingredientes con stock) antes de la `Preparacion`.
+        * **Control de Stock de `Producto`s:** Automáticamente **descuenta los `Producto`s** del catálogo al registrar una `Preparacion`.
+        * **Stock de Raciones:** La `Preparacion` ahora tiene un campo `stockRacionesRestantes` que se inicializa con el `totalRacionesPreparadas`.
+    * **Baja (Lógica):** La `Preparacion` se marca como inactiva (`activa=false`).
+        * **Control de Stock (CRÍTICO):** Al dar de baja una `Preparacion`, el sistema **reintegra el stock de `Producto`s** consumidos a la fecha de creación.
+    * **Modificación:** Solo se permite modificar la `fechaCoccion` de la `Preparacion` (la `Receta` y `totalRacionesPreparadas` son fijas porque ya afectaron el stock).
+    * **Consulta/Listado:** Listado de `Preparacion`es activas, mostrando `fechaCoccion`, `nombre` de la `Receta`, `totalRacionesPreparadas` y `caloriasPorPlato`. Filtros por `fechaCoccion` y `nombre` de `Receta`.
 
 ---
 
 ### **4. Épica 4: ABMC de Entrega de Alimentos**
 
-Registra la entrega de raciones de alimentos a una familia específica, controlando el stock de raciones disponibles de las preparaciones.
+Registra la `EntregaAsistencia` de `totalRacionesPreparadas` a una `Familia` específica, controlando el stock de `stockRacionesRestantes` de las `Preparacion`es.
 
+* **Entidades Centrales:** `EntregaAsistencia` (asociada a una `Familia` y una `Preparacion`).
 * **Funcionalidades Clave:**
-    * **Registro:** Permite registrar una entrega a una familia de un plato (preparación) específico con una cantidad de raciones.
-        * **Validaciones Críticas:** La fecha de entrega se guarda automáticamente (hoy). No puede haber dos entregas a la misma familia en el mismo día. La cantidad de raciones no puede superar el número de integrantes activos de la familia. **Verifica stock de raciones de la preparación antes de la entrega.**
-        * **Control de Stock (CRÍTICO):** Automáticamente **descuenta las raciones** del stock de la preparación correspondiente.
-    * **Baja (Lógica):** La entrega se marca como inactiva (`activa=false`).
-        * **Control de Stock (CRÍTICO):** Al dar de baja una entrega, las raciones entregadas **vuelven a estar disponibles** en el stock de la preparación original.
-    * **Consulta/Listado:** Listado de entregas realizadas, mostrando número de familia, nombre de familia, plato entregado y número de raciones. Filtros por fecha, número de familia y nombre de familia.
+    * **Registro:** Permite registrar una `EntregaAsistencia` a una `Familia` de un plato (`Preparacion`) específico con una `cantidadRaciones`.
+        * **Validaciones Críticas:** La `fecha` de `EntregaAsistencia` se guarda automáticamente (hoy). No puede haber dos `EntregaAsistencia`s a la misma `Familia` en el mismo día. La `cantidadRaciones` no puede superar el número de `Asistido`s activos de la `Familia`. **Verifica `stockRacionesRestantes` de la `Preparacion` antes de la `EntregaAsistencia`.**
+        * **Control de Stock (CRÍTICO):** Automáticamente **descuenta las raciones** del `stockRacionesRestantes` de la `Preparacion` correspondiente.
+    * **Baja (Lógica):** La `EntregaAsistencia` se marca como inactiva (`activo=false`).
+        * **Control de Stock (CRÍTICO):** Al dar de baja una `EntregaAsistencia`, las raciones entregadas **vuelven a estar disponibles** en el `stockRacionesRestantes` de la `Preparacion` original.
+    * **Consulta/Listado:** Listado de `EntregaAsistencia`s realizadas, mostrando `nroFamilia`, `nombre` de `Familia`, plato (`Preparacion`) entregado y `cantidadRaciones`. Filtros por `fecha`, `nroFamilia` y `nombre` de `Familia`.
 
 ---
 
@@ -69,28 +73,29 @@ Para verificar rápidamente la funcionalidad central de cada épica después de 
 **Asume:**
 * La aplicación está corriendo en `http://localhost:8080`.
 * Tienes un cliente HTTP como Postman o Insomnia.
-* Tu `precarga-receta.sql` incluye los ingredientes y una familia con ID `1` y dos integrantes activos.
+* Tu `precarga-receta.sql` incluye los ingredientes (como `Producto`s y `Condimento`s) y una familia inicial con `id=1` y dos `Asistido`s activos.
 * Las fechas se ajustarán automáticamente a la fecha actual si no se especifican.
 
 ---
 
 ### **Paso 0: Preparación Inicial (SQL)**
 
-Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el script `precarga-receta.sql`. Esto cargará ingredientes y una familia inicial.
+Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el script `precarga-receta.sql`. Este script está diseñado para limpiar tus tablas y precargar los datos iniciales (ingredientes con sus tipos, recetas, y una familia con asistidos) necesarios para las pruebas.
 
 ---
 
 ### **1. Probar Épica 1: ABMC de Familias (Alta)**
 
-* **Objetivo:** Crear una nueva familia.
+* **Objetivo:** Crear una nueva familia con `Asistido`s.
 * **Endpoint:** `POST http://localhost:8080/familias`
 * **Body (raw - JSON):**
     ```json
     {
-        "nombreFamilia": "Familia Testeando ABMC",
+        "nombre": "Familia Testeando ABMC",
         "integrantes": [
             {
                 "dni": 200000001,
+                "domicilio": "Calle Prueba 100",
                 "apellido": "Tester",
                 "nombre": "Ana",
                 "fechaNacimiento": "1990-01-01",
@@ -98,6 +103,7 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
             },
             {
                 "dni": 200000002,
+                "domicilio": "Calle Prueba 100",
                 "apellido": "Tester",
                 "nombre": "Pedro",
                 "fechaNacimiento": "1992-02-02",
@@ -114,13 +120,13 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
 
 * **Objetivo:** Crear una nueva receta.
 * **Endpoint:** `POST http://localhost:8080/recetas/crear`
-* **Body (raw - JSON):** (Asume que el ingrediente con `id=1` (Harina 000) existe de la precarga).
+* **Body (raw - JSON):** (Asume que el `Ingrediente` con `id=1` (Harina 000) existe como `Producto` de la precarga).
     ```json
     {
         "nombre": "Receta De Prueba ABMC",
-        "descripcionPreparacion": "Una receta sencilla para verificar el ABMC.",
-        "ingredientes": [
-            { "ingrediente": {"id": 1}, "cantidad": 0.300, "calorias": 1000 }
+        "descripcion": "Una receta sencilla para verificar el ABMC.",
+        "items": [
+            { "ingrediente": {"id": 1}, "cantidad": 0.300 } // Sin calorias aquí, se toman del Ingrediente
         ]
     }
     ```
@@ -128,35 +134,36 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
 
 ---
 
-### **3. Probar Épica 3: ABMC de Preparaciones (Registro y Descuento de Ingredientes)**
+### **3. Probar Épica 3: ABMC de Preparaciones (Registro y Descuento de Productos)**
 
-* **Objetivo:** Registrar una preparación y verificar que descuenta ingredientes.
+* **Objetivo:** Registrar una `Preparacion` y verificar que descuenta `Producto`s.
 * **Endpoint:** `POST http://localhost:8080/preparaciones/registrar`
 * **Body (x-www-form-urlencoded):**
     ```
-    fecha=<FECHA_ACTUAL_EN_FORMATO_AAAA-MM-DD>
+    fechaCoccion=<FECHA_ACTUAL_EN_FORMATO_AAAA-MM-DD>
     idReceta=<ID_RECETA_DE_PRUEBA_ABMC> (ej. 4)
-    cantidad=1
+    totalRacionesPreparadas=1
     ```
-    (Ejemplo: `fecha=2025-06-28&idReceta=4&cantidad=1`)
+    (Ejemplo: `fechaCoccion=2025-06-28&idReceta=4&totalRacionesPreparadas=1`)
 * **Verifica:**
-    1.  Deberías obtener un `201 Created` con los detalles de la preparación. **Anótate el `idPreparacion` (ej. `preparacionId=1`).**
-    2.  Realiza un `GET` a `http://localhost:8080/ingredientes/listar`. El `cantidadEnStock` del ingrediente (`Harina 000`) debería haber disminuido (0.300 kg en este caso).
+    1.  Deberías obtener un `201 Created` con los detalles de la `Preparacion`. **Anótate el `id` de esta `Preparacion` (ej. `preparacionId=1`).**
+    2.  Realiza un `GET` a `http://localhost:8080/ingredientes/listar`. El `stockDisponible` del `Producto` (`Harina 000`) debería haber disminuido (0.300 kg en este caso).
 
 ---
 
 ### **4. Probar Épica 4: ABMC de Entrega de Alimentos (Registro y Descuento de Raciones)**
 
-* **Objetivo:** Registrar una entrega y verificar que descuenta raciones de la preparación.
+* **Objetivo:** Registrar una `EntregaAsistencia` y verificar que descuenta `stockRacionesRestantes` de la `Preparacion`.
 * **Endpoint:** `POST http://localhost:8080/entregas`
 * **Body (x-www-form-urlencoded):**
     ```
     familiaId=<ID_FAMILIA_DE_LA_PREC_CARGA> (ej. 1)
     preparacionId=<ID_PREPARACION> (ej. 1, de la prueba anterior)
-    raciones=1
+    cantidadRaciones=1
     ```
-    (Ejemplo: `familiaId=1&preparacionId=1&raciones=1`)
+    (Ejemplo: `familiaId=1&preparacionId=1&cantidadRaciones=1`)
 * **Verifica:**
-    1.  Deberías obtener un `201 Created` con los detalles de la entrega.
-    2.  Realiza un `GET` a `http://localhost:8080/preparaciones/listar?fecha=<FECHA_ACTUAL>`. La preparación usada (`idPreparacion=1`) debería tener su `racionesDisponibles` disminuido (en este caso, de 1 a 0, si preparaste 1 y entregaste 1).
+    1.  Deberías obtener un `201 Created` con los detalles de la `EntregaAsistencia`.
+    2.  Realiza un `GET` a `http://localhost:8080/preparaciones/listar?fecha=<FECHA_ACTUAL>`. La `Preparacion` usada (`id=1`) debería tener su `stockRacionesRestantes` disminuido (en este caso, de 1 a 0, si se preparó 1 y se entregó 1).
 
+---
