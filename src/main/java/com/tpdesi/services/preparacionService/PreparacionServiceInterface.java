@@ -8,37 +8,18 @@ import java.util.List;
 
 public interface PreparacionServiceInterface {
 
-//    en este metodo se debe aplicar una validacion, que segun las raciones requeridas se verifique que se cuente con
-//    el stock y ademas que en la fecha ingresada no exista una preparacion con la misma receta el mismo dia.
-//    Validar que la fecha sea valida (no adelantada).
-    Preparacion registrarPreparacion (LocalDate fechaValida, Long idReceta, Integer cantidadRaciones);
+    // En este método se debe aplicar una validación, que según las raciones requeridas se verifique que se cuente con
+    // el stock y ademas que en la fecha ingresada no exista una preparación con la misma receta el mismo día.
+    // Validar que la fecha sea valida (no adelantada).
+    Preparacion registrarPreparacion (LocalDate fecha, Long idReceta, Integer cantidadRaciones); // Ajustado nombre de parámetro 'fechaValida' a 'fecha' para consistencia
 
-//    Esta sera una eliminacion logica, no de la entidad persistida.
+    // Esta será una eliminación lógica, no de la entidad persistida. También debe reintegrar el stock de ingredientes.
     void darBajaPreparacion(Long idPreparacion);
 
-//Solo se permite modificar la fecha de la preparacion.
+    // Solo se permite modificar la fecha de la preparación.
     Preparacion modificarDatosDePreparacion(LocalDate nuevaFecha, Long idPreparacion);
 
-
-//    Para el filtro en este metodo se usaran metodos Query de Spring data JPA en la clase Preparacion Repository
-    List<RecetaActivaDTO> listarRecetasActivas(LocalDate fechaFiltrar, String nombreFiltrar);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Para el filtro en este método se usaran métodos Query de Spring data JPA en la clase Preparacion Repository
+    // RENOMBRADO: listarPreparacionesActivas
+    List<RecetaActivaDTO> listarPreparacionesActivas(LocalDate fechaFiltrar, String nombreRecetaFiltrar); // Ajustado nombre de parámetro 'nombre' a 'nombreRecetaFiltrar' para claridad
 }

@@ -1,4 +1,4 @@
-package com.tpdesi.ENUM;
+package com.tpdesi.enums;
 
 public enum EstadoPreparacion {
 

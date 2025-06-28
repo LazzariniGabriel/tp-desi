@@ -1,312 +1,228 @@
-CRUD FAMILIA
+# CRUD FAMILIA
 
+**INICIO: Asegúrate de que las tablas de Familia e Integrantes estén vacías para una prueba limpia.**
 
-INICIO - BASES DE DATOS CON TABLAS DE FAMILIA E INTEGRANTES VACIA. 
+---
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### **1. Alta de una Familia (POST)**
+**Objetivo:** Crear una familia con sus integrantes.
 
-POST:
-
-
-{
-    "nombreFamilia": "Familia Gutierrez y Abuela",
-    "integrantes": [
-        {
-            "dni": 123456789,
-            "apellido": "Gutierrez",
-            "nombre": "Roberto",
-            "fechaNacimiento": "1970-01-01",
-            "ocupacion": "EMPLEADO"
-        },
-        {
-            "dni": 987654321,
-            "apellido": "Gutierrez",
-            "nombre": "Alicia",
-            "fechaNacimiento": "1972-03-15",
-            "ocupacion": "AMA_DE_CASA"
-        },
-        {
-            "dni": 111222333,
-            "apellido": "Gutierrez",
-            "nombre": "Carmen",
-            "fechaNacimiento": "1950-07-20",
-            "ocupacion": "OTRO"
-        }
-    ]
-}
-
-
-
-
-
-
-
-RESPUESTA:
-
-{
-    "id": 1,
-    "nroFamilia": "FAM-0D9573B2",
-    "nombreFamilia": "Familia Gutierrez y Abuela",
-    "fechaAlta": "2025-05-29",
-    "fechaUltimaAsistenciaRecibida": null,
-    "activa": true,
-    "integrantes": [
-        {
-            "id": 1,
-            "dni": 123456789,
-            "apellido": "Gutierrez",
-            "nombre": "Roberto",
-            "fechaNacimiento": "1970-01-01",
-            "ocupacion": "EMPLEADO",
-            "activo": true
-        },
-        {
-            "id": 2,
-            "dni": 987654321,
-            "apellido": "Gutierrez",
-            "nombre": "Alicia",
-            "fechaNacimiento": "1972-03-15",
-            "ocupacion": "AMA_DE_CASA",
-            "activo": true
-        },
-        {
-            "id": 3,
-            "dni": 111222333,
-            "apellido": "Gutierrez",
-            "nombre": "Carmen",
-            "fechaNacimiento": "1950-07-20",
-            "ocupacion": "OTRO",
-            "activo": true
-        }
-    ],
-    "cantidadIntegrantesActivos": 3
-}
-
-
-FUNCIONANDO CORRECTAMENTE.
-
-
-
-SEGUNDO INTENTO: Escenario con Errores: DNI Duplicado en el Sistema
-
-POST: 
-
-{
-    "nombreFamilia": "Familia de Prueba Error DNI",
-    "integrantes": [
-        {
-            "dni": 123456789,
-            "apellido": "Nuevo",
-            "nombre": "Integrante",
-            "fechaNacimiento": "1995-01-01",
-            "ocupacion": "EMPLEADO"
-        }
-    ]
-}
-
-RESPUESTA:
-
-Ya existe un integrante con DNI: 123456789
-
-
-TERCER ESCENARIO.  Escenario con Errores: Datos Faltantes o Inválidos
-
-POST: 
-
-{
-    "nombreFamilia": "",
-    "integrantes": [
-        {
-            "dni": -10,
-            "apellido": "Apellido",
-            "nombre": "",
-            "fechaNacimiento": "2030-01-01",
-            "ocupacion": null
-        }
-    ]
-}
-
-RESPUESTA: 
-
-
-
-{
-    "integrantes[0].ocupacion": "La Ocupación es requerida.",
-    "nombreFamilia": "El Nombre de Familia no puede estar vacío.",
-    "integrantes[0].nombre": "El Nombre no puede estar vacío.",
-    "integrantes[0].dni": "El DNI debe ser un valor numérico positivo.",
-    "integrantes[0].fechaNacimiento": "La Fecha de nacimiento no puede ser futura."
-}
-
-
--------------------------------------------------------------------------------------------------------------------------------------------------------
-
-GET: http://localhost:8080/familias
-
-
-
-RESPUESTA:
-
-[
+* **URL:** `http://localhost:8080/familias`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    ```json
+    {
+        "nombreFamilia": "Familia Gutierrez y Abuela",
+        "integrantes": [
+            {
+                "dni": 123456789,
+                "apellido": "Gutierrez",
+                "nombre": "Roberto",
+                "fechaNacimiento": "1970-01-01",
+                "ocupacion": "EMPLEADO"
+            },
+            {
+                "dni": 987654321,
+                "apellido": "Gutierrez",
+                "nombre": "Alicia",
+                "fechaNacimiento": "1972-03-15",
+                "ocupacion": "AMA_DE_CASA"
+            },
+            {
+                "dni": 111222333,
+                "apellido": "Gutierrez",
+                "nombre": "Carmen",
+                "fechaNacimiento": "1950-07-20",
+                "ocupacion": "OTRO"
+            }
+        ]
+    }
+    ```
+* **Respuesta Esperada (201 Created):**
+    ```json
     {
         "id": 1,
-        "nroFamilia": "FAM-0D9573B2",
+        "nroFamilia": "FAM-XXXXXXX", // Este será autogenerado
         "nombreFamilia": "Familia Gutierrez y Abuela",
-        "fechaAlta": "2025-05-29",
+        "fechaAlta": "2025-06-28", // Fecha actual
         "fechaUltimaAsistenciaRecibida": null,
         "activa": true,
         "integrantes": [
             {
-                "id": 1,
+                "id": 1, "dni": 123456789, "apellido": "Gutierrez", "nombre": "Roberto", "fechaNacimiento": "1970-01-01", "ocupacion": "EMPLEADO", "activo": true
+            },
+            {
+                "id": 2, "dni": 987654321, "apellido": "Gutierrez", "nombre": "Alicia", "fechaNacimiento": "1972-03-15", "ocupacion": "AMA_DE_CASA", "activo": true
+            },
+            {
+                "id": 3, "dni": 111222333, "apellido": "Gutierrez", "nombre": "Carmen", "fechaNacimiento": "1950-07-20", "ocupacion": "OTRO", "activo": true
+            }
+        ],
+        "cantidadIntegrantesActivos": 3
+    }
+    ```
+    * **Anótate el `id` y `nroFamilia` de esta familia creada.**
+
+---
+
+### **2. Escenario con Error: DNI Duplicado en el Sistema**
+
+* **URL:** `http://localhost:8080/familias`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):** (Usa un DNI ya existente, ej. `123456789`)
+    ```json
+    {
+        "nombreFamilia": "Familia de Prueba Error DNI",
+        "integrantes": [
+            {
+                "dni": 123456789,
+                "apellido": "Nuevo",
+                "nombre": "Integrante",
+                "fechaNacimiento": "1995-01-01",
+                "ocupacion": "EMPLEADO"
+            }
+        ]
+    }
+    ```
+* **Respuesta Esperada (400 Bad Request):**
+    ```
+    "Ya existe un integrante con DNI: 123456789"
+    ```
+
+---
+
+### **3. Escenario con Errores: Datos Faltantes o Inválidos**
+
+* **URL:** `http://localhost:8080/familias`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    ```json
+    {
+        "nombreFamilia": "", // Vacío
+        "integrantes": [
+            {
+                "dni": -10, // Negativo
+                "apellido": "Apellido",
+                "nombre": "", // Vacío
+                "fechaNacimiento": "2030-01-01", // Futura
+                "ocupacion": null // Nulo
+            }
+        ]
+    }
+    ```
+* **Respuesta Esperada (400 Bad Request):**
+    ```json
+    {
+        "integrantes[0].ocupacion": "La Ocupación es requerida.",
+        "nombreFamilia": "El Nombre de Familia no puede estar vacío.",
+        "integrantes[0].nombre": "El Nombre no puede estar vacío.",
+        "integrantes[0].dni": "El DNI debe ser un valor numérico positivo.",
+        "integrantes[0].fechaNacimiento": "La Fecha de nacimiento no puede ser futura."
+    }
+    ```
+
+---
+
+### **4. Listar Familias Activas (GET)**
+
+* **URL:** `http://localhost:8080/familias`
+* **Método:** `GET`
+* **Respuesta Esperada (200 OK):** (Debería listar solo la familia creada y activa)
+    ```json
+    [
+        {
+            "id": 1,
+            "nroFamilia": "FAM-XXXXXXX",
+            "nombreFamilia": "Familia Gutierrez y Abuela",
+            "fechaAlta": "2025-06-28",
+            "fechaUltimaAsistenciaRecibida": null,
+            "activa": true,
+            "integrantes": [
+                {
+                    "id": 1, "dni": 123456789, "apellido": "Gutierrez", "nombre": "Roberto", "fechaNacimiento": "1970-01-01", "ocupacion": "EMPLEADO", "activo": true
+                },
+                // ... más integrantes
+            ],
+            "cantidadIntegrantesActivos": 3
+        }
+    ]
+    ```
+
+---
+
+### **5. Modificar una Familia (PUT)**
+**Objetivo:** Actualizar nombre, fecha de última asistencia, agregar nuevos integrantes, modificar existentes y eliminar lógicamente otros.
+
+* **URL:** `http://localhost:8080/familias/<ID_FAMILIA>` (reemplaza `<ID_FAMILIA>` con el ID real)
+* **Método:** `PUT`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    * **¡Importante!** Reemplaza los IDs de los integrantes con los IDs reales de tu base de datos.
+    * No incluyas los integrantes que quieres dar de baja lógicamente.
+    * Para agregar un nuevo integrante, no le pongas `id`.
+
+    ```json
+    {
+        "nombreFamilia": "Los Gutierrez Actualizados",
+        "fechaUltimaAsistenciaRecibida": "2025-06-28", // Fecha actual
+        "integrantes": [
+            {
+                "id": <ID_INTEGRANTE_ROBERTO>, // ID del integrante Roberto
                 "dni": 123456789,
                 "apellido": "Gutierrez",
-                "nombre": "Roberto",
+                "nombre": "Roberto Carlos", // Nombre modificado
                 "fechaNacimiento": "1970-01-01",
                 "ocupacion": "EMPLEADO",
                 "activo": true
             },
             {
-                "id": 2,
-                "dni": 987654321,
-                "apellido": "Gutierrez",
-                "nombre": "Alicia",
-                "fechaNacimiento": "1972-03-15",
-                "ocupacion": "AMA_DE_CASA",
-                "activo": true
-            },
-            {
-                "id": 3,
-                "dni": 111222333,
-                "apellido": "Gutierrez",
-                "nombre": "Carmen",
-                "fechaNacimiento": "1950-07-20",
-                "ocupacion": "OTRO",
-                "activo": true
+                "dni": 444555666, // Nuevo integrante sin ID
+                "apellido": "Nuevo",
+                "nombre": "Fernanda",
+                "fechaNacimiento": "2000-01-01",
+                "ocupacion": "ESTUDIANTE"
             }
-        ],
-        "cantidadIntegrantesActivos": 3
-    },
+        ]
+    }
+    ```
+* **Respuesta Esperada (200 OK):**
+    ```json
     {
-        "id": 2,
-        "nroFamilia": "FAM-0BBE530B",
-        "nombreFamilia": "Familia de Prueba Error DNI",
-        "fechaAlta": "2025-05-29",
-        "fechaUltimaAsistenciaRecibida": null,
+        "id": <ID_FAMILIA>,
+        "nroFamilia": "FAM-XXXXXXX", // Nro. Familia no se modifica
+        "nombreFamilia": "Los Gutierrez Actualizados",
+        "fechaAlta": "2025-06-28",
+        "fechaUltimaAsistenciaRecibida": "2025-06-28",
         "activa": true,
         "integrantes": [
             {
-                "id": 4,
-                "dni": 12345678,
-                "apellido": "Nuevo",
-                "nombre": "Integrante",
-                "fechaNacimiento": "1995-01-01",
-                "ocupacion": "EMPLEADO",
-                "activo": true
+                "id": <ID_INTEGRANTE_ROBERTO>, "dni": 123456789, "apellido": "Gutierrez", "nombre": "Roberto Carlos", "fechaNacimiento": "1970-01-01", "ocupacion": "EMPLEADO", "activo": true
+            },
+            {
+                "id": <ID_INTEGRANTE_MARIA>, "dni": 987654321, "apellido": "Gutierrez", "nombre": "Alicia", "fechaNacimiento": "1972-03-15", "ocupacion": "AMA_DE_CASA", "activo": false // Este debería estar en false
+            },
+            {
+                "id": <ID_INTEGRANTE_CARMEN>, "dni": 111222333, "apellido": "Gutierrez", "nombre": "Carmen", "fechaNacimiento": "1950-07-20", "ocupacion": "OTRO", "activo": false // Este también
+            },
+            {
+                "id": <ID_NUEVO_INTEGRANTE>, "dni": 444555666, "apellido": "Nuevo", "nombre": "Fernanda", "fechaNacimiento": "2000-01-01", "ocupacion": "ESTUDIANTE", "activo": true
             }
         ],
-        "cantidadIntegrantesActivos": 1
+        "cantidadIntegrantesActivos": 2 // Debería reflejar solo los activos
     }
-]
+    ```
+    * **Verificación:** Consulta la familia por GET de nuevo y en tu base de datos para confirmar los estados `activo` de los integrantes.
 
+---
 
+### **6. Eliminar una Familia (DELETE - Lógica)**
 
-
-
--------------------------------------------------------------------------------------------------------------------------
-
-DELETE:
-
-http://localhost:8080/familias/1
-
-NO DA RESPUESTA POR POSTMAN.
-
-REVISAR LA BASE EN LA TABLA FAMILIA Y VER LA BAJA LOGICA EN LA COLUMNA 'ACTIVA' PASA DE '1' A '0' Y CUANDO SE HACE GET DE LISTA DE FAMILIAS YA NO SE OBTIENE ESTA MISMA, SI NO EL RESTO.
-
---------------------------------------------------------------------------------------------------------------------------------------------
-
-UPDATE: 
-
-PUT: 
-
-{
-    "id": 2,
-    "nroFamilia": "FAM-ABC123",  
-    "nombreFamilia": "Los Gomez Actualizados",
-    "fechaAlta": "2024-02-20", 
-    "fechaUltimaAsistenciaRecibida": "2025-05-29",
-    "activa": true, 
-    "integrantes": [
-        {
-            "id": 5,
-            "dni": 98765432,
-            "apellido": "Gomez",
-            "nombre": "Pedro Juan", 
-            "fechaNacimiento": "1968-11-05",
-            "ocupacion": "EMPLEADO", 
-            "activo": true
-        },
-        {
-            "id": 6,
-            "dni": 45678901,
-            "apellido": "Gomez",
-            "nombre": "Rosa Maria",
-            "fechaNacimiento": "1970-01-25",
-            "ocupacion": "AMA_DE_CASA",
-            "activo": false 
-        },
-        {
-            "dni": 77788899,
-            "apellido": "Gomez",
-            "nombre": "Nuevo Integrante",
-            "fechaNacimiento": "2000-01-01",
-            "ocupacion": "ESTUDIANTE"
-        }
-    ]
-}
-
-(PROBAR ENVIARLO DOS VECES SI A LA PRIMERA NO DETECTA LOS NUEVOS DOS INTEGRANTES)
-
-
-RESPUESTA: 
-
-
-{
-    "id": 2,
-    "nroFamilia": "FAM-0BBE530B",
-    "nombreFamilia": "Los Gomez Actualizados",
-    "fechaAlta": "2025-05-29",
-    "fechaUltimaAsistenciaRecibida": "2025-05-29",
-    "activa": true,
-    "integrantes": [
-        {
-            "id": 4,
-            "dni": 12345678,
-            "apellido": "Nuevo",
-            "nombre": "Integrante",
-            "fechaNacimiento": "1995-01-01",
-            "ocupacion": "EMPLEADO",
-            "activo": false
-        },
-        {
-            "id": 5,
-            "dni": 98765432,
-            "apellido": "Gomez",
-            "nombre": "Pedro Juan",
-            "fechaNacimiento": "1968-11-05",
-            "ocupacion": "EMPLEADO",
-            "activo": true
-        },
-        {
-            "id": 6,
-            "dni": 77788899,
-            "apellido": "Gomez",
-            "nombre": "Nuevo Integrante",
-            "fechaNacimiento": "2000-01-01",
-            "ocupacion": "ESTUDIANTE",
-            "activo": true
-        }
-    ],
-    "cantidadIntegrantesActivos": 2
-}
-
-
+* **URL:** `http://localhost:8080/familias/<ID_FAMILIA>` (reemplaza `<ID_FAMILIA>`)
+* **Método:** `DELETE`
+* **Respuesta Esperada (204 No Content):** `(No content)`
+* **Verificación:**
+    1.  Realiza un `GET` a `http://localhost:8080/familias`. La familia eliminada lógicamente no debería aparecer en el listado.
+    2.  Confirma en tu base de datos que el campo `activa` de la tabla `familia` para el `ID_FAMILIA` cambió a `false`.

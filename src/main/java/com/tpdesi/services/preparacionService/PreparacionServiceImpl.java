@@ -1,7 +1,7 @@
 package com.tpdesi.services.preparacionService;
 
 import com.tpdesi.DTO.RecetaActivaDTO;
-import com.tpdesi.ENUM.EstadoPreparacion;
+import com.tpdesi.enums.EstadoPreparacion;
 import com.tpdesi.entitys.IngredienteReceta;
 import com.tpdesi.entitys.Preparacion;
 import com.tpdesi.entitys.Receta;
@@ -10,13 +10,16 @@ import com.tpdesi.exceptionHandler.FechaInvalidaException;
 import com.tpdesi.exceptionHandler.PreparacionDuplicadaException;
 import com.tpdesi.exceptionHandler.StockInsuficienteException;
 import com.tpdesi.repositorys.PreparacionRepository;
-import com.tpdesi.services.RecetaService;
-import com.tpdesi.services.ingredienteService.IngredienteServiceImpl;
+import com.tpdesi.services.RecetaService; // Tu servicio de Receta
+import com.tpdesi.services.ingredienteService.IngredienteServiceImpl; // Tu servicio de Ingredientes
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Importado para transacciones
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional; // Importado
+
 @Service
 public class PreparacionServiceImpl implements PreparacionServiceInterface {
 
@@ -29,171 +32,183 @@ public class PreparacionServiceImpl implements PreparacionServiceInterface {
     @Autowired
     private IngredienteServiceImpl ingredienteService;
 
-
-
-
-        @Override
-        public Preparacion registrarPreparacion(LocalDate fechaValida, Long idReceta, Integer cantidadRaciones) {
-            try {
-                if (fechaValida == null || !fechaValida.isEqual(LocalDate.now())) {
-                    throw new FechaInvalidaException("Fecha ingresada no es valida. La preparacion debe ser creada exactamente el dia de hoy.");
-                }
-
-
-                // validamos que no exista una misma preparacion con esa receta para esa fecha
-                List<Preparacion> preparacionesExistentes = preparacionRepository.findByFechaPreparacion(fechaValida);
-                for (Preparacion p : preparacionesExistentes) {
-                    for (Receta r : p.getSeleccionDeRecetas()) {
-                        if (r.getId().equals(idReceta)) {
-                            throw new PreparacionDuplicadaException("Ya existe una preparacion con esta receta en la fecha indicada.");
-                        }
-                    }
-                }
-
-                // verificamos que la receta se encuentre activa
-                Receta receta = recetaService.buscarRecetaPorId(idReceta);
-                if (!receta.isActiva()) {
-                    throw new EstadoInvalidoException("La receta seleccionada no esta activa.");
-
-                }
-
-                // aca vamos a verificar que tengamos el stock suficiente para cada ingrediente, multiplicando la cantidad
-                // la cantidad de raciones de la preparacion, por lo que lleva la receta en cuanto a cada ingrediente,
-                // en caso de que no sea suficiente, devolveremos la cantidad de stock que falta para tal ingrediente.
-                // en caso que pase se pasara a descontar el stock de cada ingrediente.
-                for (IngredienteReceta ir : receta.getIngredientes()) {
-                    if (!ir.isActivo()) continue;
-
-                    Long idIngrediente = ir.getIngrediente().getId();
-                    Double cantidadTotal = ir.getCantidad() * cantidadRaciones;
-
-                    // Obtener el stock actual del ingrediente
-                    Double stockActual = ingredienteService.obtenerStock(idIngrediente);
-                    if (stockActual == null) stockActual = 0.0;
-
-                    if (stockActual < cantidadTotal) {
-                        double faltante = cantidadTotal - stockActual;
-                        throw new StockInsuficienteException(
-                                "stock insuficiente para: " + ir.getIngrediente().getNombre() +
-                                        ". Se necesitan " + String.format("%.2f", cantidadTotal) + " KG, hay " +
-                                        String.format("%.2f", stockActual) + " KG. Faltan " +
-                                        String.format("%.2f", faltante) + " KG."
-                        );
-                    }
-
-                }
-
-
-                // se descuenta del stock, la cantidad de raciones que viene en la preparacion multiplicado
-                // por la cantidad que lleva de ingrediente para cada unidad de la receta (las recetas las
-                // tomamos individuales)
-                for (IngredienteReceta ir : receta.getIngredientes()) {
-                    if (!ir.isActivo()) continue;
-
-                    Long idIngrediente = ir.getIngrediente().getId();
-                    Double cantidadTotal = ir.getCantidad() * cantidadRaciones;
-
-                    ingredienteService.decrementarStock(idIngrediente, cantidadTotal);
-                }
-
-                // Paso las validaciones, por lo tanto instanciamos una preparacion y luego la guardamos
-                // en este caso dado que es un trabajo practico y se cumple con la consigna, damos el estado
-                // como finalizada. ya que el stock se desconto.
-                Preparacion nueva = new Preparacion();
-                nueva.setFechaPreparacion(fechaValida);
-                nueva.setSeleccionDeRecetas(List.of(receta));
-                nueva.setCantidadDeRacionesPreparar(cantidadRaciones);
-                nueva.setEstadoPreparacion(EstadoPreparacion.FINALIZADA);
-                nueva.setRecetaActiva(true);
-
-                return preparacionRepository.save(nueva);
-
-            } catch (Exception e) {
-                throw new RuntimeException("error al registrar la preparacion: " + e.getMessage(), e);
+    @Override
+    @Transactional // Asegura que toda la operación sea atómica
+    public Preparacion registrarPreparacion(LocalDate fecha, Long idReceta, Integer cantidadRaciones) {
+        try {
+            // VALIDACIÓN DE FECHA: "no sea futura"
+            if (fecha.isAfter(LocalDate.now())) {
+                throw new FechaInvalidaException("La fecha de preparación no puede ser futura.");
             }
+
+            // Validar que la receta exista y esté activa
+            Receta receta = recetaService.obtenerRecetaPorId(idReceta); // Usa tu método para obtener receta
+            if (!receta.isActiva()) {
+                throw new EstadoInvalidoException("La receta seleccionada no está activa.");
+            }
+
+            // VALIDACIÓN DE DUPLICIDAD: "No podrá haber dos preparaciones de la misma receta para el mismo día"
+            Optional<Preparacion> preparacionExistente = preparacionRepository.findByReceta_IdAndFechaPreparacion(idReceta, fecha);
+            if (preparacionExistente.isPresent()) {
+                throw new PreparacionDuplicadaException("Ya existe una preparación con esta receta para la fecha indicada.");
+            }
+
+            // VALIDACIÓN DE STOCK DE INGREDIENTES: verificar disponibilidad antes de descontar
+            for (IngredienteReceta ir : receta.getIngredientes()) {
+                if (!ir.isActivo()) continue; // Solo considerar ingredientes activos de la receta
+
+                Long idIngrediente = ir.getIngrediente().getId();
+                Double cantidadTotalNecesaria = ir.getCantidad() * cantidadRaciones;
+
+                // Verificar stock sin descontar aún
+                Double stockActual = ingredienteService.obtenerStock(idIngrediente);
+                if (stockActual < cantidadTotalNecesaria) {
+                    double faltante = cantidadTotalNecesaria - stockActual;
+                    throw new StockInsuficienteException(
+                            "Stock insuficiente para: " + ir.getIngrediente().getNombre() +
+                                    ". Se necesitan " + String.format("%.2f", cantidadTotalNecesaria) + " KG, hay " +
+                                    String.format("%.2f", stockActual) + " KG. Faltan " +
+                                    String.format("%.2f", faltante) + " KG."
+                    );
+                }
+            }
+
+            // DESCUENTO DE STOCK DE INGREDIENTES: Si todas las validaciones pasan, se procede a descontar
+            for (IngredienteReceta ir : receta.getIngredientes()) {
+                if (!ir.isActivo()) continue; // Solo descontar de ingredientes activos
+
+                Long idIngrediente = ir.getIngrediente().getId();
+                Double cantidadTotalADescontar = ir.getCantidad() * cantidadRaciones;
+                ingredienteService.decrementarStock(idIngrediente, cantidadTotalADescontar);
+            }
+
+            // Creación y guardado de la Preparacion
+            Preparacion nuevaPreparacion = new Preparacion();
+            nuevaPreparacion.setFechaPreparacion(fecha);
+            nuevaPreparacion.setReceta(receta); // Usa el campo único 'receta'
+            nuevaPreparacion.setCantidadDeRacionesPreparar(cantidadRaciones);
+            nuevaPreparacion.setRacionesDisponibles(cantidadRaciones); // Inicializa racionesDisponibles con el total preparado
+            nuevaPreparacion.setEstadoPreparacion(EstadoPreparacion.FINALIZADA); // Asignado a FINALIZADA como en tu comentario
+            nuevaPreparacion.setActiva(true); // Usa el campo 'activa'
+
+            return preparacionRepository.save(nuevaPreparacion);
+
+        } catch (RuntimeException e) { // Captura las excepciones de negocio específicas
+            // Relanza las excepciones de negocio para que sean manejadas por GlobalExceptionHandler
+            if (e instanceof FechaInvalidaException || e instanceof EstadoInvalidoException ||
+                e instanceof PreparacionDuplicadaException || e instanceof StockInsuficienteException) {
+                throw e;
+            }
+            throw new RuntimeException("Error al registrar la preparación: " + e.getMessage(), e);
         }
+    }
 
     @Override
+    @Transactional // Asegura que la operación de reintegro sea atómica
     public void darBajaPreparacion(Long idPreparacion) {
         try {
             Preparacion preparacion = preparacionRepository.findById(idPreparacion)
-                    .orElseThrow(() -> new RuntimeException("Preparacion no encontrada con id: " + idPreparacion));
+                    .orElseThrow(() -> new RuntimeException("Preparación no encontrada con id: " + idPreparacion));
 
-            preparacion.setRecetaActiva(false);
+            if (!preparacion.isActiva()) { // Evitar reintegrar si ya estaba de baja
+                throw new IllegalArgumentException("La preparación con ID " + idPreparacion + " ya se encuentra dada de baja.");
+            }
+
+            // REINTEGRO DE STOCK DE INGREDIENTES (CRÍTICO)
+            Receta recetaAsociada = preparacion.getReceta();
+            Integer racionesPreparadasOriginales = preparacion.getCantidadDeRacionesPreparar();
+
+            for (IngredienteReceta ir : recetaAsociada.getIngredientes()) {
+                if (!ir.isActivo()) continue; // Solo reintegrar ingredientes activos de la receta
+
+                Long idIngrediente = ir.getIngrediente().getId();
+                Double cantidadAIncrementar = ir.getCantidad() * racionesPreparadasOriginales;
+                ingredienteService.agregarStock(idIngrediente, cantidadAIncrementar);
+            }
+
+            // Marcar preparación como inactiva
+            preparacion.setActiva(false); // Usa el campo 'activa'
             preparacionRepository.save(preparacion);
 
-        } catch (Exception e) {
-            throw new RuntimeException("error al dar de baja la preparacion: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            if (e instanceof IllegalArgumentException) { // Relanza para manejar errores de negocio específicos
+                throw e;
+            }
+            throw new RuntimeException("Error al dar de baja la preparación: " + e.getMessage(), e);
         }
     }
 
-
     @Override
+    @Transactional // Asegura que la operación sea atómica
     public Preparacion modificarDatosDePreparacion(LocalDate nuevaFecha, Long idPreparacion) {
         try {
-            if (nuevaFecha == null || nuevaFecha.isBefore(LocalDate.now())) {
-                throw new RuntimeException("La nueva fecha no es valida. Debe ser hoy.");
+            Preparacion preparacion = preparacionRepository.findById(idPreparacion)
+                    .orElseThrow(() -> new RuntimeException("Preparación no encontrada con id: " + idPreparacion));
+
+            // VALIDACIÓN DE FECHA: "La nueva fecha no puede ser futura"
+            if (nuevaFecha.isAfter(LocalDate.now())) {
+                throw new FechaInvalidaException("La nueva fecha de preparación no puede ser futura.");
+            }
+            
+            // Re-validar duplicidad si la fecha cambia
+            if (!preparacion.getFechaPreparacion().equals(nuevaFecha)) {
+                Optional<Preparacion> preparacionExistente = preparacionRepository.findByReceta_IdAndFechaPreparacion(
+                    preparacion.getReceta().getId(), nuevaFecha);
+                if (preparacionExistente.isPresent() && !preparacionExistente.get().getIdPreparacion().equals(idPreparacion)) {
+                    throw new PreparacionDuplicadaException("Ya existe otra preparación con la misma receta para la nueva fecha.");
+                }
             }
 
-            Preparacion preparacion = preparacionRepository.findById(idPreparacion)
-                    .orElseThrow(() -> new RuntimeException("Preparacion no encontrada con id: " + idPreparacion));
 
+            // Criterio: Solo se podrá editar la fecha de la preparación, no se puede cambiar la receta ni la cantidad de raciones
             preparacion.setFechaPreparacion(nuevaFecha);
             return preparacionRepository.save(preparacion);
 
-        } catch (Exception e) {
-            throw new RuntimeException("error al modificar la fecha de la preparacion: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+             if (e instanceof FechaInvalidaException || e instanceof PreparacionDuplicadaException) {
+                throw e;
+            }
+            throw new RuntimeException("Error al modificar la fecha de la preparación: " + e.getMessage(), e);
         }
     }
 
-
     @Override
-    public List<RecetaActivaDTO> listarRecetasActivas(LocalDate fechaFiltrar, String nombreFiltrar) {
+    // RENOMBRADO: listarPreparacionesActivas para mayor claridad
+    public List<RecetaActivaDTO> listarPreparacionesActivas(LocalDate fechaFiltrar, String nombreRecetaFiltrar) {
         try {
             List<Preparacion> preparaciones;
 
-            // filtrado de recetas activas
-            if (fechaFiltrar != null && nombreFiltrar != null && !nombreFiltrar.trim().isEmpty()) {
-
-                preparaciones = preparacionRepository.findByFechaPreparacion(fechaFiltrar).stream()
-                        .filter(p -> p.getSeleccionDeRecetas().stream()
-                                .anyMatch(r -> r.getNombre().toLowerCase().contains(nombreFiltrar.toLowerCase())))
-                        .toList();
-
+            // Lógica de filtrado con los nuevos métodos del repositorio
+            if (fechaFiltrar != null && nombreRecetaFiltrar != null && !nombreRecetaFiltrar.trim().isEmpty()) {
+                preparaciones = preparacionRepository.findByFechaPreparacionAndRecetaNombreContainingIgnoreCaseAndActivaTrue(fechaFiltrar, nombreRecetaFiltrar);
             } else if (fechaFiltrar != null) {
-                preparaciones = preparacionRepository.findByFechaPreparacion(fechaFiltrar);
-            } else if (nombreFiltrar != null && !nombreFiltrar.trim().isEmpty()) {
-                preparaciones = preparacionRepository.findByNombreDeReceta(nombreFiltrar);
+                preparaciones = preparacionRepository.findByFechaPreparacionAndActivaTrue(fechaFiltrar);
+            } else if (nombreRecetaFiltrar != null && !nombreRecetaFiltrar.trim().isEmpty()) {
+                preparaciones = preparacionRepository.findByRecetaNombreContainingIgnoreCaseAndActivaTrue(nombreRecetaFiltrar);
             } else {
-                preparaciones = preparacionRepository.findByRecetaActivaTrue();
+                preparaciones = preparacionRepository.findByActivaTrue(); // Solo listar preparaciones activas
             }
 
-            // Para devolver las recetas activas, generamos un DTO para solo devolver lo que pide el enunciado.
+            // Mapeo a DTO para la salida requerida
             return preparaciones.stream()
-                    .flatMap(p -> p.getSeleccionDeRecetas().stream()
-                            .filter(Receta::isActiva)
-                            .map(r -> {
-                                int caloriasPorPlato = r.getIngredientes().stream()
-                                        .filter(IngredienteReceta::isActivo)
-                                        .mapToInt(IngredienteReceta::getCalorias)
-                                        .sum();
+                    .map(p -> {
+                        // Calcular calorías por plato para el DTO
+                        int caloriasPorPlato = p.getReceta().getIngredientes().stream()
+                                .filter(IngredienteReceta::isActivo)
+                                .mapToInt(IngredienteReceta::getCalorias)
+                                .sum();
 
-                                return new RecetaActivaDTO(
-                                        r.getNombre(),
-                                        p.getFechaPreparacion(),
-                                        p.getCantidadDeRacionesPreparar(),
-                                        caloriasPorPlato
-                                );
-                            }))
+                        return new RecetaActivaDTO(
+                                p.getReceta().getNombre(), // Nombre de la receta asociada a la preparación
+                                p.getFechaPreparacion(),
+                                p.getCantidadDeRacionesPreparar(),
+                                caloriasPorPlato
+                        );
+                    })
                     .toList();
 
-
         } catch (Exception e) {
-            throw new RuntimeException("error al listar recetas activas: " + e.getMessage(), e);
+            throw new RuntimeException("Error al listar preparaciones activas: " + e.getMessage(), e);
         }
     }
-
-
-
 }
-

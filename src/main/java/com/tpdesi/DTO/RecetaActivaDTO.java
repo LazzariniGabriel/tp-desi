@@ -44,7 +44,7 @@ public class RecetaActivaDTO {
         return caloriasPorPlato;
     }
 
-    public void setCaloriasPorPlato(Integer caloriasPorPlato) {
+    public void voidSetCaloriasPorPlato(Integer caloriasPorPlato) { // Corregido typo en setCaloriasPorPlato
         this.caloriasPorPlato = caloriasPorPlato;
     }
 }

@@ -1,427 +1,203 @@
-CRUD RECETAS
+# CRUD RECETAS
 
+**INICIO: Asegúrate de que tu base de datos tenga los ingredientes base cargados (usa `precarga-receta.sql`).**
 
-INICIO : EJECUTAR LA PRE CARGA DE DATOS, ARCHIVO "precarga-receta.sql" .
+---
 
+### **1. Creación de Receta (POST)**
 
-------------------------------------------------------------------------------
-ESCENARIO 1 : CREACION
-
-POST: http://localhost:8080/recetas
-{
-    "nombre": "Curry de Garbanzos y Espinacas",
-    "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
-    "ingredientes": [
-        {
-            "ingrediente": {"id": 9},   // ID del ingrediente "Cebolla" de tu catálogo (data.sql)
-            "cantidad": 0.200,          // 200 gramos
-            "calorias": 80              // 80 calorías
-        },
-        {
-            "ingrediente": {"id": 10},  // ID del ingrediente "Ajo" de tu catálogo (data.sql)
-            "cantidad": 0.010,          // 10 gramos
-            "calorias": 15              // 15 calorías
-        },
-        {
-            "ingrediente": {"id": 8},   // ID del ingrediente "Tomate" de tu catálogo (data.sql)
-            "cantidad": 0.400,          // 400 gramos
-            "calorias": 90              // 90 calorías
-        },
-        {
-            "ingrediente": {"id": 1},   // ID del ingrediente "Harina 000" (usémoslo para espesar el curry, aunque no sea típico)
-            "cantidad": 0.030,          // 30 gramos
-            "calorias": 100             // 100 calorías
-        }
-        // Nota: Los ingredientes que no tienen un ID asignado (solo {"id": X} para el catálogo)
-        // son los "nuevos" ingredientes para esta receta en particular.
-        // El sistema les asignará un ID de IngredienteReceta automáticamente.
-    ]
-}
-
-
-
-
-RESPUESTA : 
-{
-    "id": 5,
-    "nombre": "Curry de Garbanzos y Espinacas",
-    "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
-    "activa": true,
-    "ingredientes": [
-        {
-            "id": 13,
-            "ingrediente": {
-                "id": 9,
-                "nombre": "Cebolla",
-                "activo": true
-            },
-            "cantidad": 0.2,
-            "calorias": 80,
-            "activo": true
-        },
-        {
-            "id": 14,
-            "ingrediente": {
-                "id": 10,
-                "nombre": "Ajo",
-                "activo": true
-            },
-            "cantidad": 0.01,
-            "calorias": 15,
-            "activo": true
-        },
-        {
-            "id": 15,
-            "ingrediente": {
-                "id": 8,
-                "nombre": "Tomate",
-                "activo": true
-            },
-            "cantidad": 0.4,
-            "calorias": 90,
-            "activo": true
-        },
-        {
-            "id": 16,
-            "ingrediente": {
-                "id": 1,
-                "nombre": "Harina 000",
-                "activo": true
-            },
-            "cantidad": 0.03,
-            "calorias": 100,
-            "activo": true
-        }
-    ],
-    "caloriasTotales": 285
-}
-
-
-------------------------------------------------------------------------------
-
-ESCENARIO 2 : 
-
-
-POST : http://localhost:8080/recetas
-
-{
-    "nombre": "Ensalada Completa",
-    "descripcionPreparacion": "Mezclar vegetales frescos, proteína y aderezo ligero. Ideal para una comida rápida y nutritiva.",
-    "integrantes": [
-        {
-            "ingrediente": {"id": 8},   // Tomate
-            "cantidad": 0.300,
-            "calorias": 50
-        },
-        {
-            "ingrediente": {"id": 9},   // Cebolla
-            "cantidad": 0.100,
-            "calorias": 30
-        },
-        {
-            "ingrediente": {"id": 4},   // Leche (ejemplo: para un aderezo cremoso, aunque sea ensalada)
-            "cantidad": 0.050,
-            "calorias": 25
-        }
-    ]
-}
-
-RESPUESTA: 
-
-Ya existe una receta con el nombre: Ensalada Completa.
-
---------------------------------------------------------------------------------------------------------------------------------------
-
-ESCENARIO 3: 
-
-
-POST: http://localhost:8080/recetas
-
-{
-    "nombre": "", // Vacío
-    "descripcionPreparacion": null, // Nulo
-    "integrantes": [
-        {
-            "ingrediente": {"id": 999}, // Ingrediente de catálogo inexistente
-            "cantidad": -5.0, // Negativo
-            "calorias": 0 // Cero o negativo
-        },
-        {
-            "ingrediente": null, // Ingrediente nulo
-            "cantidad": 10.0,
-            "calorias": 100
-        }
-    ]
-}
-
-RESPUESTA: 
-
-{
-    "descripcionPreparacion": "La Descripción de la preparación es requerida.",
-    "nombre": "El Nombre de la receta es requerido."
-}
-
-
---------------------------------------------------------------------------------------
-
-GET: http://localhost:8080/recetas
-
-
-RESPUESTA:
-[
+* **URL:** `http://localhost:8080/recetas/crear`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):** (Asegúrate de que los IDs de ingredientes existan en tu precarga. Por ejemplo, `id: 9` para "Cebolla", etc.)
+    ```json
     {
-        "id": 1,
-        "nombre": "Pan Casero Simple",
-        "descripcionPreparacion": "Mezclar ingredientes, amasar y hornear.",
-        "activa": true,
+        "nombre": "Curry de Garbanzos y Espinacas",
+        "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
         "ingredientes": [
-            {
-                "id": 1,
-                "ingrediente": {
-                    "id": 1,
-                    "nombre": "Harina 000",
-                    "activo": true
-                },
-                "cantidad": 0.5,
-                "calorias": 1800,
-                "activo": true
-            },
-            {
-                "id": 2,
-                "ingrediente": {
-                    "id": 6,
-                    "nombre": "Sal",
-                    "activo": true
-                },
-                "cantidad": 0.01,
-                "calorias": 5,
-                "activo": true
-            },
-            {
-                "id": 3,
-                "ingrediente": {
-                    "id": 7,
-                    "nombre": "Levadura",
-                    "activo": true
-                },
-                "cantidad": 0.005,
-                "calorias": 10,
-                "activo": true
-            },
-            {
-                "id": 4,
-                "ingrediente": {
-                    "id": 4,
-                    "nombre": "Leche",
-                    "activo": true
-                },
-                "cantidad": 0.2,
-                "calorias": 100,
-                "activo": true
-            }
-        ],
-        "caloriasTotales": 1915
-    },
-    {
-        "id": 2,
-        "nombre": "Salsa Bolognesa",
-        "descripcionPreparacion": "Sofreír carne, cebolla y ajo, añadir tomate y cocinar a fuego lento.",
-        "activa": true,
-        "ingredientes": [
-            {
-                "id": 5,
-                "ingrediente": {
-                    "id": 11,
-                    "nombre": "Carne Picada",
-                    "activo": true
-                },
-                "cantidad": 0.3,
-                "calorias": 750,
-                "activo": true
-            },
-            {
-                "id": 6,
-                "ingrediente": {
-                    "id": 9,
-                    "nombre": "Cebolla",
-                    "activo": true
-                },
-                "cantidad": 0.15,
-                "calorias": 60,
-                "activo": true
-            },
-            {
-                "id": 7,
-                "ingrediente": {
-                    "id": 10,
-                    "nombre": "Ajo",
-                    "activo": true
-                },
-                "cantidad": 0.02,
-                "calorias": 30,
-                "activo": true
-            },
-            {
-                "id": 8,
-                "ingrediente": {
-                    "id": 8,
-                    "nombre": "Tomate",
-                    "activo": true
-                },
-                "cantidad": 0.8,
-                "calorias": 200,
-                "activo": true
-            }
-        ],
-        "caloriasTotales": 1040
-    },
-    {
-        "id": 4,
-        "nombre": "Ensalada Completa",
-        "descripcionPreparacion": "Mezclar vegetales frescos, proteína y aderezo ligero. Ideal para una comida rápida y nutritiva.",
-        "activa": true,
-        "ingredientes": [],
-        "caloriasTotales": 0
+            { "ingrediente": {"id": 9}, "cantidad": 0.200, "calorias": 80 },
+            { "ingrediente": {"id": 10}, "cantidad": 0.010, "calorias": 15 },
+            { "ingrediente": {"id": 8}, "cantidad": 0.400, "calorias": 90 },
+            { "ingrediente": {"id": 1}, "cantidad": 0.030, "calorias": 100 }
+        ]
     }
-]
+    ```
+* **Respuesta Esperada (201 Created):**
+    ```json
+    {
+        "id": 5, // ID autogenerado
+        "nombre": "Curry de Garbanzos y Espinacas",
+        "descripcionPreparacion": "Un curry vegano y nutritivo, perfecto para una comida rápida entre semana. Se cocina a fuego lento con especias aromáticas.",
+        "activa": true,
+        "ingredientes": [
+            { "id": 13, "ingrediente": { "id": 9, "nombre": "Cebolla", "activo": true }, "cantidad": 0.2, "calorias": 80, "activo": true },
+            { "id": 14, "ingrediente": { "id": 10, "nombre": "Ajo", "activo": true }, "cantidad": 0.01, "calorias": 15, "activo": true },
+            { "id": 15, "ingrediente": { "id": 8, "nombre": "Tomate", "activo": true }, "cantidad": 0.4, "calorias": 90, "activo": true },
+            { "id": 16, "ingrediente": { "id": 1, "nombre": "Harina 000", "activo": true }, "cantidad": 0.03, "calorias": 100, "activo": true }
+        ],
+        "caloriasTotales": 285 // Suma de calorías de los ingredientes
+    }
+    ```
+    * **Anótate el `id` de esta receta y los `id` de sus `ingredientes` (IngredienteReceta).**
 
+---
 
----------------------------------------------------------------------------------------------------------------------------------------
+### **2. Escenario con Error: Nombre de Receta Duplicado**
 
-PUT: http://localhost:8080/recetas/1
+* **URL:** `http://localhost:8080/recetas/crear`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):** (Usa un nombre ya existente, ej. "Curry de Garbanzos y Espinacas")
+    ```json
+    {
+        "nombre": "Curry de Garbanzos y Espinacas",
+        "descripcionPreparacion": "Otro intento de crear el mismo curry.",
+        "ingredientes": []
+    }
+    ```
+* **Respuesta Esperada (400 Bad Request):**
+    ```
+    "Ya existe una receta con el nombre: Curry de Garbanzos y Espinacas."
+    ```
 
-{
-    "id": 1,
-    "nombre": "Pan Casero Simple", // El nombre se envía, pero el backend lo ignora (es de solo lectura)
-    "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
-    "activa": true, // La receta sigue activa
-    "ingredientes": [
-        {
-            "id": 1, // ID del ingrediente de receta existente (ej. 1 de tu data.sql)
-            "ingrediente": {"id": 1},   // Harina 000 (ID del catálogo de ingredientes)
-            "cantidad": 0.600,          // **Cantidad modificada** (de 0.500 a 0.600)
-            "calorias": 2160,           // **Calorías modificadas** (de 1800 a 2160)
-            "activo": true
-        },
-        {
-            "id": 2, // ID del ingrediente de receta existente (ej. 2 de tu data.sql)
-            "ingrediente": {"id": 6},   // Sal (ID del catálogo de ingredientes)
-            "cantidad": 0.015,          // **Cantidad modificada**
-            "calorias": 7,              // **Calorías modificadas**
-            "activo": true
-        },
-        // **Ingrediente "Levadura" (originalmente con ID_IngredienteReceta_Levadura) NO se incluye aquí.**
-        // Al no estar en la lista que enviamos, el servicio lo marcará como activo: false (eliminación lógica).
-        {
-            "id": 3, // ID del ingrediente de receta existente (ej. 4 de tu data.sql)
-            "ingrediente": {"id": 4},   // Leche (ID del catálogo de ingredientes)
-            "cantidad": 0.200,
-            "calorias": 100,
-            "activo": true
-        },
-        {
-            "ingrediente": {"id": 5},   // **Nuevo Ingrediente "Manteca"** (ID del catálogo de ingredientes)
-            "cantidad": 0.050,
-            "calorias": 350
-        }
-    ]
-}
+---
 
+### **3. Escenario con Errores: Datos Faltantes o Inválidos**
 
-RESPUESTA: 
+* **URL:** `http://localhost:8080/recetas/crear`
+* **Método:** `POST`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    ```json
+    {
+        "nombre": "", // Vacío
+        "descripcionPreparacion": null, // Nulo
+        "ingredientes": [
+            { "ingrediente": {"id": 999}, "cantidad": -5.0, "calorias": 0 }, // Ingrediente inexistente, cantidad negativa, calorías no positivas
+            { "ingrediente": null, "cantidad": 10.0, "calorias": 100 } // Ingrediente nulo
+        ]
+    }
+    ```
+* **Respuesta Esperada (400 Bad Request):**
+    ```json
+    {
+        "descripcionPreparacion": "La Descripción de la preparación es requerida.",
+        "nombre": "El Nombre de la receta es requerido."
+    }
+    ```
+    (Nota: Las validaciones de los ingredientes de receta se capturan en el servicio y pueden dar otro error si no se validan directamente con `@Valid` en el `ingredientes` de la receta)
 
-{
-    "id": 1,
-    "nombre": "Pan Casero Simple",
-    "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
-    "activa": true,
-    "ingredientes": [
+---
+
+### **4. Listar Recetas Activas (GET)**
+
+* **URL:** `http://localhost:8080/recetas`
+* **Método:** `GET`
+* **Respuesta Esperada (200 OK):** (Debería listar las recetas activas, incluyendo la que creaste.)
+    ```json
+    [
         {
             "id": 1,
-            "ingrediente": {
-                "id": 1,
-                "nombre": "Harina 000",
-                "activo": true
-            },
-            "cantidad": 0.6,
-            "calorias": 2160,
-            "activo": true
+            "nombre": "Pan Casero Simple",
+            "descripcionPreparacion": "Mezclar ingredientes, amasar y hornear.",
+            "activa": true,
+            "ingredientes": [ /* ... */ ],
+            "caloriasTotales": 1915
         },
         {
             "id": 2,
-            "ingrediente": {
-                "id": 6,
-                "nombre": "Sal",
-                "activo": true
-            },
-            "cantidad": 0.015,
-            "calorias": 7,
-            "activo": true
+            "nombre": "Salsa Bolognesa",
+            "descripcionPreparacion": "Sofreír carne, cebolla y ajo, añadir tomate y cocinar a fuego lento.",
+            "activa": true,
+            "ingredientes": [ /* ... */ ],
+            "caloriasTotales": 1040
         },
         {
-            "id": 3,
-            "ingrediente": {
-                "id": 4,
-                "nombre": "Leche",
-                "activo": true
-            },
-            "cantidad": 0.2,
-            "calorias": 100,
-            "activo": true
-        },
-        {
-            "id": 4,
-            "ingrediente": {
-                "id": 4,
-                "nombre": "Leche",
-                "activo": true
-            },
-            "cantidad": 0.2,
-            "calorias": 100,
-            "activo": false
-        },
-        {
-            "id": 12,
-            "ingrediente": {
-                "id": 5,
-                "nombre": "Manteca",
-                "activo": true
-            },
-            "cantidad": 0.05,
-            "calorias": 350,
-            "activo": true
+            "id": 5,
+            "nombre": "Curry de Garbanzos y Espinacas",
+            "descripcionPreparacion": "Un curry vegano y nutritivo...",
+            "activa": true,
+            "ingredientes": [ /* ... */ ],
+            "caloriasTotales": 285
         }
-    ],
-    "caloriasTotales": 2617
-}
+    ]
+    ```
 
+---
 
+### **5. Modificar Receta (PUT)**
+**Objetivo:** Actualizar descripción, cantidad y calorías de ingredientes, y eliminar lógicamente un ingrediente de receta existente.
 
+* **URL:** `http://localhost:8080/recetas/<ID_RECETA>` (reemplaza `<ID_RECETA>` con el ID de la receta que quieres modificar, ej. `1` para "Pan Casero Simple")
+* **Método:** `PUT`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw - JSON):**
+    * **¡Importante!** Usa los IDs de los `ingredientes` (IngredienteReceta) que anotaste al crear la receta, o los que obtengas de un GET.
 
+    ```json
+    {
+        "id": 1, // ID de la receta (se ignora el nombre)
+        "nombre": "Pan Casero Simple", // El nombre se envía, pero el backend lo ignora (es de solo lectura)
+        "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
+        "activa": true,
+        "ingredientes": [
+            {
+                "id": <ID_INGREDIENTE_RECETA_HARINA>, // ID de IngredienteReceta de Harina
+                "ingrediente": {"id": 1},
+                "cantidad": 0.600, // Cantidad modificada
+                "calorias": 2160, // Calorías modificadas
+                "activo": true
+            },
+            {
+                "id": <ID_INGREDIENTE_RECETA_SAL>, // ID de IngredienteReceta de Sal
+                "ingrediente": {"id": 6},
+                "cantidad": 0.015,
+                "calorias": 7,
+                "activo": true
+            },
+            // Ingrediente "Levadura" (si existía) NO se incluye para eliminarlo lógicamente.
+            {
+                "id": <ID_INGREDIENTE_RECETA_LECHE>, // ID de IngredienteReceta de Leche
+                "ingrediente": {"id": 4},
+                "cantidad": 0.200,
+                "calorias": 100,
+                "activo": true
+            },
+            {
+                "ingrediente": {"id": 5}, // Nuevo Ingrediente "Manteca" (sin ID de IngredienteReceta)
+                "cantidad": 0.050,
+                "calorias": 350
+            }
+        ]
+    }
+    ```
+* **Respuesta Esperada (200 OK):**
+    ```json
+    {
+        "id": 1,
+        "nombre": "Pan Casero Simple",
+        "descripcionPreparacion": "Versión mejorada: Receta de pan fácil y rápida, ideal para principiantes. Requiere poco amasado y un toque de manteca para mayor suavidad.",
+        "activa": true,
+        "ingredientes": [
+            // Ingredientes actualizados y nuevos
+            { /* ... Harina (cantidad y calorías actualizadas) ... */ },
+            { /* ... Sal (cantidad y calorías actualizadas) ... */ },
+            { /* ... Leche ... */ },
+            { /* ... Manteca (nuevo, con ID de IngredienteReceta autogenerado) ... */ },
+            { /* ... Levadura (si existía, ahora con activo: false) ... */ } // Fíjate en este
+        ],
+        "caloriasTotales": 2617 // Nueva suma de calorías de los ingredientes *activos*
+    }
+    ```
+    * **Verificación:** Consulta la receta por GET de nuevo y en tu base de datos para confirmar los estados `activo` de los ingredientes de receta.
 
+---
 
+### **6. Eliminar Receta (DELETE - Lógica)**
 
-ESCENARIO 2 DE PUT:  (ID de receta que no existe)
-
-{
-    "id": 999,
-    "nombre": "Receta Inexistente",
-    "descripcionPreparacion": "Esta no existe."
-}
-
-RESPUESTA:
-Receta no encontrada con ID: 999
-
-
----------------------------------------------------------------------------------------------------
-
-DELETE: http://localhost:8080/recetas/2
-
-VER COMO EL REGISTRO EN LA TABLA DE LA BASE DE DATOS CAMBIA LA COLUMNA DE ACTIVO DE 1 A 0 POR ENDE CUANDO RECUPERAMOS TODAS LAS RECETAS ESTA YA NO APARECE. 
-
-
-ESCENARIO 2 DELETE: http://localhost:8080/recetas/999
-
-RESPUESTA:
-Receta no encontrada con ID: 999
-
+* **URL:** `http://localhost:8080/recetas/<ID_RECETA_A_ELIMINAR>`
+* **Método:** `DELETE`
+* **Respuesta Esperada (204 No Content):** `(No content)`
+* **Verificación:**
+    1.  Realiza un `GET` a `http://localhost:8080/recetas`. La receta eliminada lógicamente no debería aparecer.
+    2.  Confirma en tu base de datos que el campo `activa` de la tabla `receta` para el `ID_RECETA_A_ELIMINAR` cambió a `false`.
