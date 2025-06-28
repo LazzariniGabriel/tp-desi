@@ -22,7 +22,7 @@ public class RecetaController {
     private RecetaService recetaService;
 
     // --- ALTA DE RECETA ---
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<?> crearReceta(@Valid @RequestBody Receta receta, BindingResult result) {
         if (result.hasErrors()) {
             Map<String, String> errors = result.getFieldErrors().stream()

@@ -22,6 +22,8 @@ public class Ingrediente {
     @Column(unique = true)
     private String nombre; // Ej: "Harina", "Azúcar", "Leche"
 
+    private Double cantidadEnStock;
+
     // Un ingrediente del catálogo siempre está activo por defecto, no se pide eliminación lógica aquí
     private boolean activo = true; // Por si en el futuro se quiere una eliminación lógica de ingredientes del catálogo
 
