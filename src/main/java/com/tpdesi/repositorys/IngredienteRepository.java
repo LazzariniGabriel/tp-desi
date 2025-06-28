@@ -14,16 +14,11 @@ import java.util.Optional;
 public interface IngredienteRepository extends JpaRepository<Ingrediente, Long> {
     Optional<Ingrediente> findByNombreIgnoreCase(String nombre);
 
-    
-    List<Producto> findAllProductos(); 
-    List<Condimento> findAllCondimentos();
-
-  
     @Query("SELECT i FROM Ingrediente i WHERE TYPE(i) = Producto")
-    List<Producto> findProductos();
+    List<Producto> findProductos(); 
 
     @Query("SELECT i FROM Ingrediente i WHERE TYPE(i) = Condimento")
-    List<Condimento> findCondimentos();
+    List<Condimento> findCondimentos(); 
 
    
     @Query("SELECT i FROM Ingrediente i WHERE i.id = :id AND TYPE(i) = Producto")
