@@ -1,4 +1,4 @@
-# Proyecto DESI - Centro de Asistencia Social (UTN - FR Santa Fe)
+# Proyecto DESI - Centro de Asistencia Social (UTN Santa Fe)
 
 Este proyecto implementa un sistema de información para un centro de asistencia social, gestionando la entrega de alimentos a familias. El desarrollo se ha estructurado en 4 Épicas principales, abordando las necesidades de ABMC (Alta, Baja, Modificación y Consulta) de las entidades clave y la gestión de stock de alimentos.
 
@@ -126,7 +126,7 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
         "nombre": "Receta De Prueba ABMC",
         "descripcion": "Una receta sencilla para verificar el ABMC.",
         "items": [
-            { "ingrediente": {"id": 1}, "cantidad": 0.300 } // Sin calorias aquí, se toman del Ingrediente
+            { "ingrediente": {"id": 1}, "cantidad": 0.300 }
         ]
     }
     ```
@@ -167,3 +167,7 @@ Abre tu cliente de base de datos (MySQL Workbench, DBeaver, etc.) y ejecuta el s
     2.  Realiza un `GET` a `http://localhost:8080/preparaciones/listar?fecha=<FECHA_ACTUAL>`. La `Preparacion` usada (`id=1`) debería tener su `stockRacionesRestantes` disminuido (en este caso, de 1 a 0, si se preparó 1 y se entregó 1).
 
 ---
+
+ALUMNOS: 
+
+LAZZARINI GABRIEL, FEDERICO STEINAKER, MAURO ROSALES.
